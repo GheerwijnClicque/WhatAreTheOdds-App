@@ -1,0 +1,18 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      Friends
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-item-divider color="light">My friends</ion-item-divider>
+  <ion-item *ngFor="let f of users">
+    {{f.name}} <button ion-button (click)="challengeFriend(f)">Challenge</button>
+  </ion-item>
+  <ion-item-divider color="light">People you know</ion-item-divider>
+  <ion-item *ngFor="let f of friends">
+    <!-- {{f.name}} <button ion-button (click)="addAsFriend(f)">Add Friend</button> -->
+  </ion-item>
+</ion-content>

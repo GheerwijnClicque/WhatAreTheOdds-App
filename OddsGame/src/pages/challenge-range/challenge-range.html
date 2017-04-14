@@ -1,0 +1,17 @@
+<ion-header>
+  <ion-navbar hideBackButton>
+    <ion-title></ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <h2>What are the odds?</h2>
+  <h1>{{range}}</h1>
+  <div>
+    <span><button class="round-button" ion-button *ngFor="let g of guesses" [ngClass]="{'selected': g === guess}" (click)="selectGuess(g)">{{g}}</button></span>
+  </div>
+
+
+  <button ion-button (click)="submit()" >Submit</button>
+  <button ion-button (click)="cancel()">Cancel</button>
+</ion-content>

@@ -1,0 +1,46 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      Challenge
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+   <!-- <ion-list-header>Follow us on Twitter</ion-list-header> -->
+
+    <!--{{myTurn()}}-->
+    <h2>"{{challenge.challenge}}"</h2>
+    <div *ngIf="isAccepted() || isChallenger()">  <!--|| challenge.challenger_id === user.id (or just make it an entry without detail? -->
+        <h3>The odds are {{challenge.range}}</h3>
+    </div>
+    <div *ngIf="equalsGuesses() && guessesMade()">
+        <h4>You guessed the same!</h4>
+        <div *ngIf="!isChallenger()">
+            <p>Upload a picture to show you complete the challenge!</p>
+        </div>
+    </div>
+    <div *ngIf="!equalsGuesses() && !guessesMade()">
+        <div *ngIf="!isAccepted() && !isChallenger()">
+            "{{challenge.challenge}}"
+            <button ion-button color="secondary" (click)="accept(challenge)">Accept</button>
+            <button ion-button color="danger" (click)="decline(challenge)">Decline</button>
+        </div>
+        <div *ngIf="isAccepted() && myTurn()">
+            <ion-item>
+
+                <ion-range min="1" max="{{challenge.range}}" [(ngModel)]="guess" color="secondary">
+                    <ion-label range-left>0</ion-label>
+                    <ion-label range-right>{{guess}}</ion-label>
+                </ion-range>
+            </ion-item>
+            <div>
+                <button ion-button (click)="submitGuess()">Guess</button>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="!equalsGuesses() && guessesMade()">
+        <p>Guesses were wrong! bye</p>
+    </div>
+
+</ion-content>

@@ -1,0 +1,8 @@
+- accept/decline challenge -> accept = +10p
+
+- active challenge -> decline (retreat) = -10p
+- execution -> challenger rates: bad (5p), meh (10p), good (15p)
+- no execution in 24h -> -20p + ban from challenging other people?
+
+
+- if rejected -> show disabled (or with 'rejected') for 24h, then delete from db!
