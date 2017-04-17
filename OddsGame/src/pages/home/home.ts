@@ -32,12 +32,10 @@ export class HomePage {
   private user_id: any;
   //private zone: any;
 
+  private score: any;
 
   constructor(public navCtrl: NavController, private pipe: ChallengesPipe, public fb: Facebook, public storage: Storage, public db: DatabaseProvider, public alertCtrl: AlertController, private zone: NgZone) {
     //this.zone = new NgZone({enableLongStackTrace: false});
-
-
-
 
   }
 
@@ -53,8 +51,39 @@ export class HomePage {
 
     this.storage.get('user').then((value) => {
       let userId = JSON.parse(value).id;
+
+
+        this.db.getScore(userId).map(res => res.json()).subscribe(response => {
+           //this.storage.set('score', response);
+            this.zone.run(() => {
+              this.score = response;
+            });
+          },
+          error => {
+            console.log(error);
+          },
+          () => console.log("Finished"));
+
+
+   /*   this.storage.get('score').then((score) => {
+          this.score = score;
+      }); */
+
+
+    /*  this.db.getScore(userId).map(res => res.json()).subscribe(response => {
+        this.zone.run(() => {
+          this.storage.set('score', this.score);
+          this.score = response;
+        });
+      },
+      error => {
+        console.log(error);
+      },
+      () => console.log("Finished")); */
+
+
       this.user_id = userId;
-      this.socket = io('http://192.168.1.147:3000/', {query: 'data=' + userId});
+      this.socket = io('http://192.168.1.147:3000/', {query: 'data=' + userId})
 
       this.socket.on('challenge-add', (challenge) => {
         this.zone.run(() => {
@@ -69,6 +98,15 @@ export class HomePage {
           this.updateChallenge(challenge);
         })
       });
+
+      this.socket.on('score-update', (score) => {
+        this.zone.run(() => {
+          this.score = score;
+          //this.storage.set('score', score);
+          alert(score);
+        })
+      });
+
     });
   }
 

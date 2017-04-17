@@ -23,21 +23,65 @@ $font-path: "../assets/fonts";
 // colors so you can add, rename and remove colors as needed.
 // The "primary" color is the only required color in the map.
 
+// https://coolors.co/424d58-79f2a9-f25f5c-41d3bd-247ba0
+
 $colors: (
   primary:    #387ef5,
   secondary:  #32db64,
   danger:     #f53d3d,
   light:      #f4f4f4,
-  dark:       #222
+  dark:       #222,
+  app: (
+    base:       #424D58,
+    inactive:   #51BA84,
+    contrast:   #fff,
+    green:      #79f2a9,
+    red:        #F25F5C,
+  ),
+  white: #fff,
 );
+
+$toolbar-ios-title-text-color: color($colors, app, contrast);
+$toolbar-ios-title-text-align: center;
+
+// Refresher
+$refresher-text-color: color($colors, app, contrast);
+$refresher-icon-color: color($colors, app, contrast);
+
+// Tabs
+$tabs-background: color($colors, app, base);
+$tabs-ios-tab-color-active: color($colors, app, green);
+$tabs-ios-tab-color-inactive: color($colors, app, contrast);
+
+// Items
+$item-ios-detail-push-color: color($colors, app, green);
+$item-ios-divider-color: color($colors, app, contrast);
+//$item-ios-divider-background: color($colors, app, base);
+//$item-ios-sliding-content-background: color($colors, app, base);
+
+$list-ios-background-color: color($colors, app, base);
+$list-ios-text-color: color($colors, app, contrast);
+//$list-ios-border-color: color($colors, app, contrast);
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // App iOS Variables
 // --------------------------------------------------
 // iOS only Sass variables can go here
 
-
-
+$action-sheet-ios-background: color($colors, app, base);
+$background-ios-color: color($colors, app, base);
 
 // App Material Design Variables
 // --------------------------------------------------

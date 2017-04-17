@@ -1,54 +1,33 @@
 import { Component } from '@angular/core';
 import { NavController, AlertController } from 'ionic-angular';
+
 import { Storage } from '@ionic/storage';
 
 import { DatabaseProvider } from '../../providers/database-provider';
 
-
 @Component({
-  selector: 'page-friends',
-  templateUrl: 'friends.html'
+  selector: 'page-highscores',
+  templateUrl: 'highscores.html'
 })
-export class FriendsPage {
-  users: any;
+export class HighscoresPage {
+  highscores: any;
 
-  constructor(public navCtrl: NavController, private db: DatabaseProvider, private storage: Storage, private alertCtrl: AlertController) {
-    this.getUsers();
+  constructor(public navCtrl: NavController, private db: DatabaseProvider, private alertCtrl: AlertController, private storage: Storage) {
+
   }
 
-  //TODO: IMPLEMENT PULL TO REFRESH!!
-
-
-  getUsers() {
-    /*this.storage.get('user').then((user) => {
-      this.db.getFriends(JSON.parse(user).id).map(res => res.json()).subscribe(response => {
-        this.users = Object.keys(response).map((key) => { return response[key]; });
+  ionViewWillEnter() {
+      this.db.getHighscores().map(res => res.json()).subscribe(response => {
+        this.highscores = Object.keys(response).map((key) => { return response[key]; });
       },
       error => {
         console.log(error);
       },
       () => console.log("Finished"));
-    //);*/
-
-      this.db.getUsers().map(res => res.json()).subscribe(response => {
-            this.users = Object.keys(response).map((key) => { return response[key]; });
-      },
-      error => {
-        console.log(error);
-      },
-      () => console.log("Finished"));
-
-
   }
 
-  addAsFriend(user) {
-    this.storage.get('user').then((value) => {
-      let userId = JSON.parse(value).id;
-      this.db.addFriend(userId, user.facebook_id);
-    });
-  }
 
-  challengeFriend(user) {
+  challengeUser(user) {
     let prompt = this.alertCtrl.create({
       title: 'Challenge',
       message: "What are the odds that you will...",
@@ -80,4 +59,5 @@ export class FriendsPage {
     });
     prompt.present();
   }
+
 }

@@ -14,12 +14,36 @@
     <div *ngIf="isAccepted() || isChallenger()">  <!--|| challenge.challenger_id === user.id (or just make it an entry without detail? -->
         <h3>The odds are {{challenge.range}}</h3>
     </div>
+
+
     <div *ngIf="equalsGuesses() && guessesMade()">
         <h4>You guessed the same!</h4>
-        <div *ngIf="!isChallenger()">
+        <div *ngIf="!isChallenger() && !hasImage()">
             <p>Upload a picture to show you complete the challenge!</p>
+            <button ion-button color="secondary" (click)="takePicture()">Take Image</button>
+            <button ion-button color="secondary" (click)="selectFromLibrary()">Select Image</button>
+
+            <ion-card>
+                <img [src]="sanitizer.bypassSecurityTrustUrl(imageUrl)" *ngIf="imageUrl" />
+            </ion-card>
+
+            <button ion-button color="danger" *ngIf="imageUrl" (click)="upload()">Send</button>
+
+            <p>{{error}}</p>
+        </div>
+
+        <div *ngIf="isChallenger() && hasImage()">
+            <img src="http://192.168.0.199:8888/Web&MobileDev/Project/Server/uploads/{{challenge.image_url}}"/>
+            <button ion-button color="secondary" (click)="judgeChallenge(true)">Good</button>
+            <button ion-button color="danger" (click)="judgeChallenge(false)">Bad</button>
         </div>
     </div>
+
+    <div *ngIf="isCompleted()">
+        COMPLETED THIS CHALLENGE! IT WILL BE REMOVED IN 24H
+    </div>
+
+
     <div *ngIf="!equalsGuesses() && !guessesMade()">
         <div *ngIf="!isAccepted() && !isChallenger()">
             "{{challenge.challenge}}"

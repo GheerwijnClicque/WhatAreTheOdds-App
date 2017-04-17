@@ -125,4 +125,27 @@ export class DatabaseProvider {
     () => console.log("Finished"));
   }
 
+  getScore(userId) {
+    return this.http.get(URL + userId + '/score');
+  }
+
+  uploadImageURL(userId, url, challengeId) {
+    return this.http.post(URL + 'image', {
+      url: url,
+      challenge: challengeId,
+      user: userId
+    });
+  }
+
+  completed(userId, challengeId, state) {
+    return this.http.post(URL + 'completed', {
+      completed: state,
+      challenge: challengeId,
+      user: userId
+    });
+  }
+
+  getHighscores() {
+    return this.http.get(URL + 'highscores');
+  }
 }

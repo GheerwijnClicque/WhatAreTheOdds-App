@@ -20,7 +20,7 @@ router.post('/user/add', function(req, res) {
     db.serialize(function() {
         db.each("SELECT COUNT(*) as count FROM users where name = $name or facebook_id = $id", {$name: userName, $id: userId}, function(error, row) {
             if(row.count === 0) {
-                db.run("INSERT INTO users(facebook_id, name) VALUES ($id, $name)", {$id: userId, $name: userName}, function() {
+                db.run("INSERT INTO users(facebook_id, name, score) VALUES ($id, $name, 0)", {$id: userId, $name: userName}, function() {
                     if(this.lastID) res.sendStatus(200);
                     console.log('user added to database!');
                 });
@@ -110,7 +110,7 @@ router.get('/:user_id/challenges', function(req, res) {
     var getRow;
     db.serialize(function() {
         // Get all processes of specified user
-        db.all("SELECT challenges.challenge_id, challenges.challenger_id, challenges.challengee_id, challenges.challenge, challenges.created_at, challenges.updated_at, challenger.name as challenger_name, challengee.name as challengee_name, challenges.challengee_id, challenges.range, challenges.accepted, challenges.rejected, challenges.challenger_guess, challenges.challengee_guess, challenges.challenger_turn from CHALLENGES INNER JOIN USERS AS challenger ON (challenges.challenger_id=challenger.facebook_id) INNER JOIN USERS as challengee ON (challenges.challengee_id=challengee.facebook_id) WHERE challenges.challengee_id = $id OR challenges.challenger_id = $id", {$id: userID},function(error, row) {
+        db.all("SELECT challenges.challenge_id, challenges.challenger_id, challenges.challengee_id, challenges.challenge, challenges.created_at, challenges.updated_at, challenger.name as challenger_name, challengee.name as challengee_name, challenges.challengee_id, challenges.range, challenges.accepted, challenges.rejected, challenges.challenger_guess, challenges.challengee_guess, challenges.challenger_turn, challenges.image_url, challenges.completed from CHALLENGES INNER JOIN USERS AS challenger ON (challenges.challenger_id=challenger.facebook_id) INNER JOIN USERS as challengee ON (challenges.challengee_id=challengee.facebook_id) WHERE challenges.challengee_id = $id OR challenges.challenger_id = $id", {$id: userID},function(error, row) {
             getRow = row;
             //console.log(row);
             res.send(JSON.stringify(getRow));
@@ -190,6 +190,16 @@ router.post('/adduser', function(req, res) {
 				console.log("already exists");
 				res.sendStatus(409); // Conflict status code
 			}
+		});
+	});
+});
+
+router.get('/highscores', function(req, res) {
+	db.serialize(function() {
+		db.all("SELECT * from USERS ORDER BY score DESC", function(error, row) {
+			console.log('highscores');
+			console.log(row);
+			res.send(JSON.stringify(row));
 		});
 	});
 });

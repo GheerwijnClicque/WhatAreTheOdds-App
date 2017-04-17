@@ -15,6 +15,7 @@
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
 
+
 .item-disabled {
   pointer-events: none;
   color: lightgrey;
@@ -29,3 +30,21 @@
 .round-button.selected {
   background-color: red;
 }
+
+.toolbar-background {
+  background: color($colors, app, base);
+}
+
+ion-title {
+  color: color($colors, app, contrast);
+}
+
+body {
+  font-family: 'Helvetica Neue';
+  color: color($colors, app, contrast);
+}
+
+ion-navbar {
+
+}
+

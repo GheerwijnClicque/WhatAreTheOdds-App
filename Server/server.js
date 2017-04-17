@@ -60,16 +60,10 @@ io.sockets.on('connection', function(socket) {
     console.log('Connected: %s sockets connected', Object.keys(connections).length);
 
     socket.on('disconnect', function(data) {
-        //connections.splice(connections.indexOf(socket), 1);
         deleteByVal(socket);
-        //console.log(socket.id);
         console.log('Disconnected: %s sockets connected', Object.keys(connections).length);
     });
 
-    Object.keys(connections).forEach(function(key) {
-        var val = connections[key];
-        //console.log(val.id);
-    });
 
     //console.log(connections);
     //socket.broadcast.to(con.id).emit('test', 'yolo');
@@ -87,11 +81,12 @@ function deleteByVal(val) {
     }
 }
 
+/*
 var getChallengeById = function(id, event) {
     console.log('Looking for challenge');
-    db.serialize(function() {
+     db.serialize(function() {
         // Get process by id
-        db.all("SELECT challenges.challenge_id, challenges.challenger_id, challenges.challengee_id, challenges.challenge, challenges.created_at, challenges.updated_at, challenger.name as challenger_name, challengee.name as challengee_name, challenges.challengee_id, challenges.range, challenges.accepted, challenges.rejected, challenges.challenger_guess, challenges.challengee_guess, challenges.challenger_turn from CHALLENGES INNER JOIN USERS AS challenger ON (challenges.challenger_id=challenger.facebook_id) INNER JOIN USERS as challengee ON (challenges.challengee_id=challengee.facebook_id) WHERE challenges.challenge_id = $id", {$id: id},function(error, row) {
+         db.all("SELECT challenges.challenge_id, challenges.challenger_id, challenges.challengee_id, challenges.challenge, challenges.created_at, challenges.updated_at, challenger.name as challenger_name, challengee.name as challengee_name, challenges.challengee_id, challenges.range, challenges.accepted, challenges.rejected, challenges.challenger_guess, challenges.challengee_guess, challenges.challenger_turn from CHALLENGES INNER JOIN USERS AS challenger ON (challenges.challenger_id=challenger.facebook_id) INNER JOIN USERS as challengee ON (challenges.challengee_id=challengee.facebook_id) WHERE challenges.challenge_id = $id", {$id: id},function(error, row) {
             //getRow = JSON.stringify(row);
 
             if(row !== null){
@@ -117,9 +112,54 @@ var getChallengeById = function(id, event) {
                 catch(e) {
                     console.log(e);
                 }
+                return row[0];
             }
         });
     });
+}; */
+
+var getChallengeById = function(id, event) {
+  return new Promise((resolve, reject) => {
+          console.log('Looking for challenge');
+        db.serialize(function () {
+            // Get process by id
+            db.all("SELECT challenges.challenge_id, challenges.challenger_id, challenges.challengee_id, challenges.challenge, challenges.created_at, challenges.updated_at, challenger.name as challenger_name, challengee.name as challengee_name, challenges.challengee_id, challenges.range, challenges.accepted, challenges.rejected, challenges.challenger_guess, challenges.challengee_guess, challenges.challenger_turn, challenges.image_url, challenges.completed from CHALLENGES INNER JOIN USERS AS challenger ON (challenges.challenger_id=challenger.facebook_id) INNER JOIN USERS as challengee ON (challenges.challengee_id=challengee.facebook_id) WHERE challenges.challenge_id = $id", {$id: id}, function (error, row) {
+                //getRow = JSON.stringify(row);
+
+                if (row !== null) {
+                    var challenge = row[0];
+                    console.log('Found challenge');
+                  //  var challengerCon = findSocketByUserId(challenge.challenger_id);
+                  //  var challengeeCon = findSocketByUserId(challenge.challengee_id);
+
+                    //console.log(challengerCon);
+                    //console.log(challengeeCon);
+
+                    //io.sockets.emit(event, row[0]);
+                   /* try {
+                        io.to(challengerCon.id).emit(event, row[0]);
+                    }
+                    catch (e) {
+                        console.log(e);
+                    }
+
+                    try {
+                        io.to(challengeeCon.id).emit(event, row[0]);
+                    }
+                    catch (e) {
+                        console.log(e);
+                    } */
+                    resolve(row[0]);
+                }
+                else {
+                    if(error) {
+                        reject(error);
+                    }
+                    reject('Not found!');
+                }
+            });
+        });
+  });
 };
 
 var findSocketByUserId = function(id) {
@@ -132,6 +172,49 @@ var findSocketByUserId = function(id) {
     })[0]; // return first one */
     return connections[id];
 };
+
+var getScore = function(id) {
+    db.serialize(function() {
+        db.get("SELECT score FROM USERS where user_id = $id", {$id: id}, function(error, row) {
+            if(row) {
+
+            }
+        });
+    });
+}
+
+var updateScore = function(userId, score) {
+    db.serialize(function() {
+        db.each("SELECT COUNT(*) as count FROM USERS where facebook_id = $id", {$id: userId}, function(error, row) {
+            if(row.count !== 0) {
+                console.log('updating score...');
+                console.log(userId);
+                console.log(score);
+                db.run("UPDATE users SET score = (score + $score) WHERE facebook_id = $id", {$score: score, $id: userId}, function() {
+                    if(this.changes) {
+                        console.log('updated score');
+                        var userCon = findSocketByUserId(userId);
+
+                        db.get("SELECT score FROM USERS where facebook_id = $id", {$id: userId}, function(error, row) {
+                            console.log(row);
+                            if(row) {
+                                try {
+                                    console.log('con id: ' + userCon.id);
+                                    io.to(userCon.id).emit('score-update', row.score);
+                                }
+                                catch(e) {
+                                    console.log(e);
+                                }
+                                console.log('score: ' + score);
+                            }
+                        });
+
+                    }
+                });
+            }
+        });
+    });
+}
 
 app.post('/challenge', function(req, res) {
     var challengerId = req.body.challengerId;
@@ -151,8 +234,28 @@ app.post('/challenge', function(req, res) {
                     if(this.lastID) res.sendStatus(200);
                     if(this.lastID) {
                         console.log('challenge added to database!');
-                        var challenge = getChallengeById(this.lastID, 'challenge-add');
-                        res.send(challenge);
+
+                        var challenge = getChallengeById(this.lastID, 'challenge-add').then((row) => {
+                            var challengerCon = findSocketByUserId(row.challenger_id);
+                            var challengeeCon = findSocketByUserId(row.challengee_id);
+                            try {
+                                io.to(challengerCon.id).emit('challenge-add', row);
+                             }
+                             catch (e) {
+                                console.log(e);
+                             }
+
+                             try {
+                                io.to(challengeeCon.id).emit('challenge-add', row);
+                             }
+                             catch (e) {
+                                console.log(e);
+                             }
+                            //res.send(row);
+                        }, (error) => {
+                            console.log('error: ' + error);
+                        });
+
                     }
                 });
             }
@@ -179,10 +282,29 @@ app.post('/challenge/accept', function(req, res) {
         db.each("SELECT COUNT(*) as count FROM challenges where challenge_id = $id and challengee_id = $userId", {$id: challengeId, $userId: userId}, function(error, row) {
             if(row.count !== 0) {
                 db.run("UPDATE challenges SET range = $range, accepted = $accepted, updated_at = $now, challenger_turn = (NOT challenger_turn) WHERE challenge_id = $id ", {$range: range, $accepted: 1, $now: +new Date(), $id: challengeId}, function() {
-                    if(this.lastID) res.sendStatus(200);
-                    if(this.lastID) {
+                    if(this.changes) res.sendStatus(200);
+                    if(this.changes) {
                         console.log('challenge updated with range: ' + range);
-                        var challenge = getChallengeById(this.lastID, 'challenge-update');
+                        getChallengeById(challengeId, 'challenge-update').then((row) => {
+                            var challengerCon = findSocketByUserId(row.challenger_id);
+                        var challengeeCon = findSocketByUserId(row.challengee_id);
+                        try {
+                            io.to(challengerCon.id).emit('challenge-update', row);
+                        }
+                        catch (e) {
+                            console.log(e);
+                        }
+
+                        try {
+                            io.to(challengeeCon.id).emit('challenge-update', row);
+                        }
+                        catch (e) {
+                            console.log(e);
+                        }
+                        updateScore(row.challengee_id, 10);
+                    }, (error) => {
+                            console.log('error: ' + error);
+                        });
                     }
                 });
             }
@@ -196,24 +318,44 @@ app.post('/challenge/accept', function(req, res) {
 
 app.post('/challenge/decline', function(req, res) {
     var challengeId = req.body.challenge;
-    var userId = req.body.user;
 
-    console.log('decline: ' + challengeId);
     db.serialize(function() {
         db.each("SELECT COUNT(*) as count FROM challenges where challenge_id = $id", {$id: challengeId}, function(error, row) {
-            if(row.count !== 0) {
+
+            // if(row.count !== 0) {
                 db.run("UPDATE challenges SET rejected = $rejected, updated_at = $now WHERE challenge_id = $id ", {$rejected: 1, $now: +new Date(), $id: challengeId}, function() {
-                    if(this.lastID) res.sendStatus(200);
-                    if(this.lastID) {
+                    console.log('decline: ' + challengeId);
+
+                    if(this.changes) res.sendStatus(200);
+                    if(this.changes) {
                         console.log('declined challenge');
-                        var challenge = getChallengeById(this.lastID, 'challenge-update');
+                        getChallengeById(challengeId, 'challenge-update').then((row) => {
+                            var challengerCon = findSocketByUserId(row.challenger_id);
+                            var challengeeCon = findSocketByUserId(row.challengee_id);
+                            try {
+                                io.to(challengerCon.id).emit('challenge-update', row);
+                            }
+                            catch (e) {
+                                console.log(e);
+                            }
+
+                            try {
+                                io.to(challengeeCon.id).emit('challenge-update', row);
+                            }
+                            catch (e) {
+                                console.log(e);
+                            }
+                            updateScore(row.challengee_id, -10);
+                        }, (error) => {
+                            console.log('error: ' + error);
+                        });
                     }
                 });
-            }
+           /* }
             else {
                 console.log("update failed, no entry found");
                 res.sendStatus(409); // Conflict status code
-            }
+            } */
         });
     });
 });
@@ -226,9 +368,159 @@ app.post('/challenge/guess', function(req, res) {
     console.log('id: ' + challengeId);
     console.log('gess: ' + guess);
     console.log('user: ' + userId);
+
+    db.serialize(function() {
+        db.get("SELECT * FROM challenges where challenge_id = $id", {$id: challengeId}, function(error, row) {
+            var query = 'UPDATE challenges SET ';
+            if(row && row.challenger_id === parseInt(userId)) {
+                query += ('challenger_guess = ' + guess + ', challenger_turn = 0 WHERE challenge_id = $id');
+            }
+            else if(row && row.challengee_id === parseInt(userId)) {
+                query += ('challengee_guess = ' + guess + ', challenger_turn = 1 WHERE challenge_id = $id');
+            }
+            db.run(query, {$id: challengeId}, function() {
+                if(this.changes) res.sendStatus(200);
+                if(this.changes) {
+                    console.log('updated challenge');
+                    getChallengeById(challengeId, 'challenge-update').then((row) => {
+                        var challengerCon = findSocketByUserId(row.challenger_id);
+                    var challengeeCon = findSocketByUserId(row.challengee_id);
+                    try {
+                        io.to(challengerCon.id).emit('challenge-update', row);
+                    }
+                    catch (e) {
+                        console.log(e);
+                    }
+
+                    try {
+                        io.to(challengeeCon.id).emit('challenge-update', row);
+                    }
+                    catch (e) {
+                        console.log(e);
+                    }
+                }, (error) => {
+                        console.log('error: ' + error);
+                    });
+                }
+            });
+        });
+    });
+});
+
+app.get('/:user_id/score', function(req, res) {
+    var userID = req.params.user_id;
+    var getRow;
+    db.serialize(function() {
+        // Get all processes of specified user
+        db.get("SELECT score from USERS WHERE facebook_id = $id", {$id: userID},function(error, row) {
+            getRow = row;
+            if(row) {
+                console.log('score:');
+                console.log(row.score);
+                var score = row.score;
+                res.send(JSON.stringify(score));
+            }
+            else {
+                console.log('no score found');
+            }
+
+        });
+    });
+});
+
+
+app.post('/image', function(req, res) {
+    var userId = req.body.user;
+    var challengeId = req.body.challenge;
+    var url = req.body.url;
+
+    console.log(userId);
+    console.log(challengeId);
+    console.log(url);
+    db.serialize(function() {
+        db.get("SELECT * FROM challenges where challenge_id = $id && challengee_id = $user", {$id: challengeId, $user: userId}, function(error, row) {
+            db.run("UPDATE challenges SET updated_at = $now, challenger_turn = (NOT challenger_turn), image_url = $url WHERE challenge_id = $id ", {$now: +new Date(), $id: challengeId, $url: url}, function() {
+                if(this.changes) res.sendStatus(200);
+                if(this.changes) {
+                    console.log('updated challenge');
+                    getChallengeById(challengeId, 'challenge-update').then((row) => {
+                        var challengerCon = findSocketByUserId(row.challenger_id);
+                    var challengeeCon = findSocketByUserId(row.challengee_id);
+                    try {
+                        io.to(challengerCon.id).emit('challenge-update', row);
+                    }
+                    catch (e) {
+                        console.log(e);
+                    }
+
+                    try {
+                        io.to(challengeeCon.id).emit('challenge-update', row);
+                    }
+                    catch (e) {
+                        console.log(e);
+                    }
+                }, (error) => {
+                        console.log('error: ' + error);
+                    });
+                }
+            });
+        });
+    });
+});
+
+app.post('/completed', function(req, res) {
+    var userId = req.body.user;
+    var challengeId = req.body.challenge;
+    var completed = req.body.completed;
+
+
+    console.log(userId);
+    console.log(challengeId);
+    console.log(completed);
+    db.serialize(function() {
+        db.get("SELECT * FROM challenges where challenge_id = $id && challenger_id = $user", {$id: challengeId, $user: userId}, function(error, row) {
+            db.run("UPDATE challenges SET updated_at = $now, challenger_turn = (NOT challenger_turn), completed = $completed WHERE challenge_id = $id ", {$now: +new Date(), $id: challengeId, $completed: completed}, function() {
+                if(this.changes) res.sendStatus(200);
+                if(this.changes) {
+                    console.log('updated challenge');
+                    getChallengeById(challengeId, 'challenge-update').then((row) => {
+                        var challengerCon = findSocketByUserId(row.challenger_id);
+                        var challengeeCon = findSocketByUserId(row.challengee_id);
+                        try {
+                            io.to(challengerCon.id).emit('challenge-update', row);
+                        }
+                        catch (e) {
+                            console.log(e);
+                        }
+
+                        try {
+                            io.to(challengeeCon.id).emit('challenge-update', row);
+                        }
+                        catch (e) {
+                            console.log(e);
+                        }
+                        if(completed) {
+                            updateScore(row.challengee_id, 10);
+                        } else {
+                            updateScore(row.challengee_id, -10);
+                        }
+                    }, (error) => {
+                        console.log('error: ' + error);
+                    });
+                }
+            });
+        });
+    });
+});
+
+/*
+app.post('/score/update', function(req, res) {
+    var score = req.body.score;
+    var userId = req.body.user;
+
     db.serialize(function() {
 
-        db.get("SELECT * FROM challenges where challenge_id = $id", {$id: challengeId}, function(error, row) {
+        db.get("SELECT * FROM USERS where facebook_id = $id", {$id: userId}, function(error, row) {
             var query = 'UPDATE challenges SET ';
             if(row && row.challenger_id === parseInt(userId)) {
                 query += ('challenger_guess = ' + guess + ', challenger_turn = 0 WHERE challenge_id = $id');
@@ -247,8 +539,7 @@ app.post('/challenge/guess', function(req, res) {
     });
 });
 
-
-
+*/
 
 
 

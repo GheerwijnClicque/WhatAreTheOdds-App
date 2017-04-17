@@ -34,12 +34,12 @@ export class ChallengeRange {
 
   submit() {
     this.db.accept(this.user_id, this.challenge.challenge_id, this.guess);
-    this.viewCtrl.dismiss();
+    this.viewCtrl.dismiss(true); // true = submitted
    // this.navCtrl.pop();
   }
 
   cancel() {
-    this.viewCtrl.dismiss();
+    this.viewCtrl.dismiss(false); // false = cancelled
   }
 
 }

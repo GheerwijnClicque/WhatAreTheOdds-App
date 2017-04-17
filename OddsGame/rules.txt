@@ -6,3 +6,7 @@
 
 
 - if rejected -> show disabled (or with 'rejected') for 24h, then delete from db!
+
+- if guessed wrong -> show
+- if not updated in one week -> delete + subtract points
+- extra points for completing 3 challenges in a row

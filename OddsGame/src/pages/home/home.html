@@ -1,11 +1,14 @@
 <ion-header>
   <ion-navbar>
-    <ion-title>Home</ion-title>
-    <ion-buttons end>
+    <!--  <ion-buttons start>
+         <span>{{score}}</span>
+      </ion-buttons> -->
+    <ion-title navbarColor>{{score}}</ion-title>
+    <!-- <ion-buttons end>
       <button ion-button icon-only (click)="search()">
         <ion-icon name="search"></ion-icon>
       </button>
-    </ion-buttons>
+    </ion-buttons> -->
   </ion-navbar>
 </ion-header>
 
@@ -32,7 +35,6 @@
                     {{challenge.display}} {{challenge.created_at | TimeSincePipe }}
                 </ion-item>
             </div>
-
 
         </ion-item-group>
     </ion-list>

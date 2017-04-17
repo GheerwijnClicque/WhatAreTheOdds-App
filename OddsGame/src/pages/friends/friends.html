@@ -9,7 +9,7 @@
 <ion-content>
   <ion-item-divider color="light">My friends</ion-item-divider>
   <ion-item *ngFor="let f of users">
-    {{f.name}} <button ion-button (click)="challengeFriend(f)">Challenge</button>
+    {{f.name}} <button ion-button (click)="challengeFriend(f)" item-right>Challenge</button>
   </ion-item>
   <ion-item-divider color="light">People you know</ion-item-divider>
   <ion-item *ngFor="let f of friends">
