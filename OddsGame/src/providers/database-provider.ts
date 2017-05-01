@@ -6,8 +6,10 @@ import { Network } from 'ionic-native';
 import 'rxjs/add/operator/map';
 import * as io from 'socket.io-client';
 
+import { server } from '../providers/server-info';
+
 //const URL = 'http://5e02351a.ngrok.io/';
-const URL = 'http://192.168.1.147:3000/';
+const URL = 'http://' + server.URL + ':3000/';
 
 /*
   Generated class for the DatabaseProvider provider.
@@ -147,5 +149,9 @@ export class DatabaseProvider {
 
   getHighscores() {
     return this.http.get(URL + 'highscores');
+  }
+
+  getStatistics(userId) {
+    return this.http.get(URL + userId + '/statistics');
   }
 }

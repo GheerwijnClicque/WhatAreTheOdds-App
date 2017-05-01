@@ -17,20 +17,12 @@ export class ChallengesPipe {
 
     transform(value, args) {
         return value.filter((obj) => {
-            if(obj.accepted === args[0] && args[0] === 0) { // Pending challenges
+            if(obj.accepted === args[0]) {
                 if(obj.challengee_id === parseInt(JSON.parse(this.user).id)) {
                     return obj['display'] = obj.challenger_name + ' challenged you';
                 }
                 else {
                     return obj['display'] = 'You challenged ' + obj.challengee_name;
-                }
-            }
-            else if(obj.accepted === args[0] && args[0] === 1){
-                if(!obj.peek) {
-                    return obj['display'] = obj.challenger_name + ' - ' + obj.challengee_name;
-                }
-                else {
-                    return obj['display'] = '"' + obj.challenge + '"';
                 }
             }
         });

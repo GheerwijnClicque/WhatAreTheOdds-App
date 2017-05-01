@@ -33,12 +33,17 @@ $colors: (
   dark:       #222,
   app: (
     base:       #424D58,
+    dark:       #2A3540,
     inactive:   #51BA84,
     contrast:   #fff,
     green:      #79f2a9,
+    darkgreen:  #5eb57e,
     red:        #F25F5C,
+    facebook: #3b5998,
   ),
   white: #fff,
+  green:      #79f2a9,
+
 );
 
 $toolbar-ios-title-text-color: color($colors, app, contrast);
@@ -58,17 +63,21 @@ $item-ios-detail-push-color: color($colors, app, green);
 $item-ios-divider-color: color($colors, app, contrast);
 //$item-ios-divider-background: color($colors, app, base);
 //$item-ios-sliding-content-background: color($colors, app, base);
+$item-ios-divider-background: color($colors, app, dark);
+$item-ios-divider-color: color($colors, app, contrast);
+//$item-md-divider-background: color($colors, app, green);
+
 
 $list-ios-background-color: color($colors, app, base);
 $list-ios-text-color: color($colors, app, contrast);
 //$list-ios-border-color: color($colors, app, contrast);
 
+$toolbar-md-button-color: color($colors, app, contrast);
 
 
-
-
-
-
+// Button
+$button-ios-text-color: color($colors, app, green);
+$button-ios-background-color-activated: color($colors, app, dark);
 
 
 
@@ -80,8 +89,23 @@ $list-ios-text-color: color($colors, app, contrast);
 // --------------------------------------------------
 // iOS only Sass variables can go here
 
-$action-sheet-ios-background: color($colors, app, base);
+//Action sheet
+//$action-sheet-ios-background: color($colors, app, base);
 $background-ios-color: color($colors, app, base);
+$action-sheet-ios-button-destructive-text-color: color($colors, app, red);
+$action-sheet-ios-border-radius: 6px;
+//$action-sheet-ios-button-cancel-background: color($colors, app, base);
+//$action-sheet-ios-title-color: color($colors, app, contrast);
+$action-sheet-ios-button-text-color: color($colors, app, base);
+
+//Searchbar
+$searchbar-ios-input-search-icon-color: color($colors, app, contrast);
+$searchbar-ios-input-text-color: color($colors, app, contrast);
+$searchbar-ios-input-clear-icon-color: color($colors, app, contrast);
+
+//Badges
+$badge-ios-background-color: color($colors, app, contrast);
+$badge-ios-text-color: color($colors, app, dark);
 
 // App Material Design Variables
 // --------------------------------------------------

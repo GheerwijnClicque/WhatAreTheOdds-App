@@ -3,12 +3,19 @@
     <!--  <ion-buttons start>
          <span>{{score}}</span>
       </ion-buttons> -->
-    <ion-title navbarColor>{{score}}</ion-title>
-    <!-- <ion-buttons end>
-      <button ion-button icon-only (click)="search()">
-        <ion-icon name="search"></ion-icon>
-      </button>
-    </ion-buttons> -->
+      <div *ngIf="enableSearch" class="search-bar">
+          <ion-searchbar (ionInput)="search($event)" [showCancelButton]="enableSearch" (ionCancel)="toggleSearch()" placeholder="Search"></ion-searchbar>
+      </div>
+      <div *ngIf="!enableSearch">
+          <ion-title navbarColor>{{score}}</ion-title>
+          <ion-buttons end>
+              <button ion-button icon-only (tap)="toggleSearch()">
+                  <ion-icon name="search"></ion-icon>
+              </button>
+          </ion-buttons>
+      </div>
+
+
   </ion-navbar>
 </ion-header>
 
@@ -18,21 +25,19 @@
                                refreshingSpinner="circles"
                                refreshingText="Refreshing...">></ion-refresher-content>
     </ion-refresher>
-    <ion-list>
+    <ion-list no-lines>
         <ion-item-group>
-          <ion-item-divider color="dark">Active challenges</ion-item-divider>  <!-- // TODO: add badge for how many challenges! -->
-          <ion-item *ngFor="let challenge of myChallenges.slice().reverse() | ChallengesPipe: [1]" detail-push (click)="challengeDetail(challenge)">
-            {{challenge.challenger_name}} - {{challenge.challengee_name}}
+          <ion-item-divider>Active challenges<ion-badge item-right>{{(myChallenges.slice().reverse() | ChallengesPipe: [1]).length}}</ion-badge></ion-item-divider>  <!-- // TODO: add badge for how many challenges! -->
+          <ion-item *ngFor="let challenge of myChallenges.slice().reverse() | ChallengesPipe: [1] | searchByChallenge: searchTerm" detail-push (tap)="challengeDetail(challenge)" (press)="handlePress(challenge)">
+              {{challenge.display}}
           </ion-item>
-          <ion-item-divider color="dark">Pending challenges</ion-item-divider> <!-- // TODO: add badge for how many challenges! -->
-
-
+          <ion-item-divider>Pending challenges<ion-badge item-right>{{(myChallenges.slice().reverse() | ChallengesPipe: [0]).length}}</ion-badge></ion-item-divider> <!-- // TODO: add badge for how many challenges! -->
             <div *ngFor="let challenge of myChallenges.slice().reverse() | ChallengesPipe: [0]" >
-                <ion-item *ngIf="isChallenger(challenge)" [ngClass]="{'item-disabled': challenge.rejected}">
-                    {{challenge.display}} {{challenge.created_at | TimeSincePipe }}
+                <ion-item *ngIf="isChallenger(challenge)" [ngClass]="{'item-disabled': challenge.rejected}" class="item-lines">
+                    {{challenge.display}}<span item-right>{{challenge.created_at | TimeSincePipe }}</span>
                 </ion-item>
-                <ion-item *ngIf="!isChallenger(challenge)" [ngClass]="{'item-disabled': challenge.rejected}" detail-push  (click)="challengeDetail(challenge)">
-                    {{challenge.display}} {{challenge.created_at | TimeSincePipe }}
+                <ion-item *ngIf="!isChallenger(challenge)" [ngClass]="{'item-disabled': challenge.rejected}" detail-push class="item-lines" (tap)="challengeDetail(challenge)">
+                    {{challenge.display}}<span item-right>{{challenge.created_at | TimeSincePipe }}</span>
                 </ion-item>
             </div>
 

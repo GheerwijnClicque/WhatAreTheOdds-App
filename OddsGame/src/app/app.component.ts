@@ -9,7 +9,7 @@ import { HomePage } from '../pages/home/home';
 import { ContactPage } from '../pages/contact/contact';
 
 import { Storage } from '@ionic/storage';
-
+import { Keyboard } from '@ionic-native/keyboard';
 
 @Component({
   templateUrl: 'app.html'
@@ -17,7 +17,7 @@ import { Storage } from '@ionic/storage';
 export class MyApp {
   rootPage:any = Login;
 
-  constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, storage: Storage) {
+  constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, storage: Storage, keyboard: Keyboard) {
     storage.get('user').then((value) => {
       //alert(value + ' is logged in!');
       if(value !== null) {
@@ -37,6 +37,10 @@ export class MyApp {
       // Here you can do any higher level native things you might need.
       statusBar.styleDefault();
       splashScreen.hide();
+
+
+        keyboard.disableScroll(true);
+
 
       //storage.set('test', 'BOOOOOOEM!');
       //storage.remove('test');

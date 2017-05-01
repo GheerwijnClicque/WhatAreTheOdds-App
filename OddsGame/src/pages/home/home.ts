@@ -5,16 +5,18 @@ import { Facebook } from '@ionic-native/facebook';
 
 import { Storage } from '@ionic/storage';
 
-import { Login } from '../login/login';
-import { ContactPage } from '../contact/contact';
-import { Challenge } from '../challenge/challenge';
 import { ChallengeDetail } from '../challenge-detail/challenge-detail';
 
 
 import { DatabaseProvider } from '../../providers/database-provider';
 import { ChallengesPipe } from '../../app/pipes/challenges';
+import { Keyboard } from '@ionic-native/keyboard';
 
 import * as io from 'socket.io-client';
+
+import { server } from '../../providers/server-info';
+
+const URL = server.URL;
 
 @Component({
   selector: 'page-home',
@@ -34,9 +36,22 @@ export class HomePage {
 
   private score: any;
 
-  constructor(public navCtrl: NavController, private pipe: ChallengesPipe, public fb: Facebook, public storage: Storage, public db: DatabaseProvider, public alertCtrl: AlertController, private zone: NgZone) {
-    //this.zone = new NgZone({enableLongStackTrace: false});
+  private enableSearch = false;
+  private searchTerm = '';
 
+  private enableNamePeek = false;
+
+  constructor(public navCtrl: NavController, private pipe: ChallengesPipe, private keyboard: Keyboard, public fb: Facebook, public storage: Storage, public db: DatabaseProvider, public alertCtrl: AlertController, private zone: NgZone) {
+    //this.zone = new NgZone({enableLongStackTrace: false});
+    storage.get('user').then((value) => {
+        let userId = JSON.parse(value).id;
+
+        this.zone.run(() => {
+          this.getChallenges();
+          this.getScore();
+        });
+     
+    });
   }
 
   ionViewWillLeave() {
@@ -45,25 +60,13 @@ export class HomePage {
 
   ionViewWillEnter() {
     //this.getfriends();
-    this.zone.run(() => {
-      this.getChallenges();
-    });
+  
 
     this.storage.get('user').then((value) => {
       let userId = JSON.parse(value).id;
 
 
-        this.db.getScore(userId).map(res => res.json()).subscribe(response => {
-           //this.storage.set('score', response);
-            this.zone.run(() => {
-              this.score = response;
-            });
-          },
-          error => {
-            console.log(error);
-          },
-          () => console.log("Finished"));
-
+  
 
    /*   this.storage.get('score').then((score) => {
           this.score = score;
@@ -83,7 +86,7 @@ export class HomePage {
 
 
       this.user_id = userId;
-      this.socket = io('http://192.168.1.147:3000/', {query: 'data=' + userId})
+      this.socket = io('http://' + URL + ':3000/', {query: 'data=' + userId})
 
       this.socket.on('challenge-add', (challenge) => {
         this.zone.run(() => {
@@ -111,7 +114,9 @@ export class HomePage {
   }
 
   ionViewDidEnter() {
-   // this.db.addUser('Gheerwijn', '1532159443463111');
+    this.keyboard.disableScroll(true);
+
+    // this.db.addUser('Gheerwijn', '1532159443463111');
    /* this.storage.get('test').then((test) => {
       console.log(test);
     }); */
@@ -121,6 +126,7 @@ export class HomePage {
   doRefresh(refresher) {
     this.zone.run(() => {
       this.getChallenges();
+      this.getScore();
       refresher.complete();
     });
   }
@@ -171,22 +177,28 @@ export class HomePage {
     this.storage.get('user').then((value) => {
       let userId = JSON.parse(value).id;
       this.db.getChallenges(userId).map(res => res.json()).subscribe(response => {
-          this.zone.run(() => {
-            this.myChallenges = Object.keys(response).map((key) => { return response[key]; });
-
-          });
-          },
-          error => {
-            console.log(error);
-          },
-          () => console.log("Finished"));
+          this.myChallenges = Object.keys(response).map((key) => { return response[key]; });
+      },
+      error => {
+        console.log(error);
+      },
+      () => console.log("Finished"));
     });
   }
 
-  getMyChallenges() { // people you challenged
-
+  getScore() {
+    this.storage.get('user').then((value) => {
+      let userId = JSON.parse(value).id;
+      this.db.getScore(userId).map(res => res.json()).subscribe(response => {
+          this.score = response;
+      },
+      error => {
+        console.log(error);
+      },
+      () => console.log("Finished"));
+    });
   }
-
+  
   challengeDetail(challenge) {
     // TODO: check which page should be shown: if challenge is accepted -> show detail page w accept/decline, otherwise detail page without accept/decline
     // but with details (ngIf in view)
@@ -200,4 +212,22 @@ export class HomePage {
     return false;
   }
 
+  toggleSearch() {
+      this.enableSearch = !this.enableSearch;
+      this.searchTerm = '';
+  }
+
+
+  search(ev: any) {
+    this.searchTerm = ev.target.value;
+  }
+
+  handlePress(challenge) {
+    this.zone.run(() => {
+      challenge['peek'] = true;
+      let time = setTimeout(() => {
+          challenge['peek'] = false;
+      }, 1000);
+    });
+  }
 }

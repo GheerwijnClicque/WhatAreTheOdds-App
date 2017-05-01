@@ -19,17 +19,9 @@
 .item-disabled {
   pointer-events: none;
   color: lightgrey;
+  text-decoration: line-through;
 }
 
-.round-button {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-}
-
-.round-button.selected {
-  background-color: red;
-}
 
 .toolbar-background {
   background: color($colors, app, base);
@@ -48,3 +40,69 @@ ion-navbar {
 
 }
 
+.button-green {
+  color: color($colors, app, dark);
+  background-color: color($colors, app, green);
+  font-size: 15px;
+  width: 35%;
+}
+
+.button-white {
+  color: color($colors, app, dark);
+  background-color: color($colors, app, contrast);
+}
+
+.button-red {
+  color: color($colors, app, dark);
+  background-color: color($colors, app, red);
+  font-size: 15px;
+  width: 35%;
+}
+
+.button-red-block{
+  color: color($colors, app, dark);
+  background-color: color($colors, app, red);
+  font-size: 15px;
+  width: 100%;
+}
+
+.text-green {
+  color: color($colors, app, green);
+}
+
+.text-white {
+  color: color($colors, app, contrast);
+}
+
+h1, h2, h3, h4, h5 {
+  color: color($colors, app, contrast);
+}
+
+.div-bottom{
+  position: absolute;
+  margin-bottom: 5%;
+  width: 100%;
+}
+
+.no-scroll .scroll-content{
+  overflow: hidden;
+
+}
+
+.static-wrapper{
+  width: 100%;
+  min-height: 100%;
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.no-header {
+  height: 80px;
+  margin-top: 25%;
+}
+
+.back-button {
+  color: color($colors, app, contrast);
+}

@@ -16,6 +16,10 @@ import { DomSanitizer } from '@angular/platform-browser'; // prevent XSS and suc
 
 import { Transfer, FileUploadOptions, TransferObject } from '@ionic-native/transfer';
 
+import { server } from '../../providers/server-info';
+
+const URL = server.URL;
+
 @Component({
   selector: 'page-challenge-detail',
   templateUrl: 'challenge-detail.html'
@@ -43,7 +47,7 @@ export class ChallengeDetail {
     this.storage.get('user').then((value) => {
       this.user_id = JSON.parse(value).id; // Move this to constructor!!
 
-      this.socket = io('http://192.168.1.147:3000/', {query: 'data=' + this.user_id});
+      this.socket = io('http://' + URL + ':3000/', {query: 'data=' + this.user_id});
 
       this.socket.on('challenge-update', (challenge) => {
         this.zone.run(() => {

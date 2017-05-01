@@ -2,3 +2,16 @@ page-home {
 
 }
 
+.item-lines {
+  border-bottom: solid color($colors, app, contrast) 1px;
+}
+
+.search-bar {
+  height: 30px;
+  margin-top: -10px;
+  color: color($colors, app, contrast) !important;
+}
+
+ion-icon {
+  color: color($colors, app, contrast);
+}

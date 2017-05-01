@@ -25,9 +25,12 @@ import { DatabaseProvider } from '../providers/database-provider';
 
 import { ChallengesPipe } from './pipes/challenges';
 import { TimeSincePipe } from './pipes/timeSince';
+import { SearchByName } from './pipes/search';
+import { SearchByChallenge} from './pipes/search';
 
 import { HttpModule } from '@angular/http';
-
+import { Keyboard } from '@ionic-native/keyboard';
+import {NgSwitch, NgSwitchCase} from '@angular/common'
 @NgModule({
   declarations: [
     MyApp,
@@ -42,10 +45,15 @@ import { HttpModule } from '@angular/http';
     ChallengeRange,
     ChallengesPipe,
     TimeSincePipe,
+    SearchByName,
+    SearchByChallenge
   ],
   imports: [
     BrowserModule,
-    IonicModule.forRoot(MyApp),
+    IonicModule.forRoot(MyApp, {
+      scrollAssist: false,
+      autoFocusAssist: false
+    }),
     IonicStorageModule.forRoot(),
     HttpModule
   ],
@@ -70,8 +78,10 @@ import { HttpModule } from '@angular/http';
     DatabaseProvider,
     ChallengesPipe,
     Camera,
-    Transfer
-
+    Transfer,
+    Keyboard,
+    NgSwitch,
+    NgSwitchCase
   ]
 })
 export class AppModule {}

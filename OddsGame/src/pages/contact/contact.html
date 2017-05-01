@@ -1,18 +1,46 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      Settings
+      {{user_name}}
     </ion-title>
   </ion-navbar>
+   <ion-toolbar>
+    <ion-segment [(ngModel)]="selectedSegment" color="secondary">
+      <ion-segment-button value="statistics">
+        <!-- <ion-icon name="camera"></ion-icon> -->
+        Statistics
+      </ion-segment-button>
+      <ion-segment-button value="achievements">
+          <!-- <ion-icon name="camera"></ion-icon> -->
+          Achievements
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-list>
-   <!-- <ion-list-header>Follow us on Twitter</ion-list-header> -->
-    <ion-item>
-      Logged in as {{user.name}}
-    </ion-item>
-    <button ion-button (click)="logout()" block>Logout</button>
-    <button ion-button (click)="request()" block>REQUEST</button>
-  </ion-list>
+    <div class="static-wrapper" ion-fixed text-center>
+        <ion-avatar item-left>
+            <img [src]="picture" *ngIf="picture" />
+        </ion-avatar>
+        <h4>{{user_name}}</h4>
+
+        <div [ngSwitch]="selectedSegment">
+
+        </div>
+        <div style="width: 65%; margin: 0 auto; padding-top: 40px;">
+            <canvas #pieChartCanvas></canvas>
+        </div>
+        <div > 
+            <ion-list>
+                Achievements
+            </ion-list>
+        </div>
+
+        <div class="div-bottom">
+            <button ion-button color="secondary" class="button-red-block" (click)="logout()" block>Logout</button>
+        </div>
+        <!-- swipe cards or something? Statistics (pie chart), Achievements (scroll list), Settings? -->
+    </div>
+
 </ion-content>

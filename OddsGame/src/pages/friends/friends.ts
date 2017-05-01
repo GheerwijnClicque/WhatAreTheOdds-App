@@ -3,6 +3,7 @@ import { NavController, AlertController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
 import { DatabaseProvider } from '../../providers/database-provider';
+import { SearchByName } from '../../app/pipes/search';
 
 
 @Component({
@@ -11,13 +12,15 @@ import { DatabaseProvider } from '../../providers/database-provider';
 })
 export class FriendsPage {
   users: any;
+  backupUsers: any;
+
+  searchTerm: string = '';
 
   constructor(public navCtrl: NavController, private db: DatabaseProvider, private storage: Storage, private alertCtrl: AlertController) {
     this.getUsers();
   }
 
   //TODO: IMPLEMENT PULL TO REFRESH!!
-
 
   getUsers() {
     /*this.storage.get('user').then((user) => {
@@ -32,6 +35,7 @@ export class FriendsPage {
 
       this.db.getUsers().map(res => res.json()).subscribe(response => {
             this.users = Object.keys(response).map((key) => { return response[key]; });
+            this.backupUsers = this.users;
       },
       error => {
         console.log(error);
@@ -39,6 +43,10 @@ export class FriendsPage {
       () => console.log("Finished"));
 
 
+  }
+
+  search(ev: any) {
+    this.searchTerm = ev.target.value;
   }
 
   addAsFriend(user) {

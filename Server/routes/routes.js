@@ -21,8 +21,11 @@ router.post('/user/add', function(req, res) {
         db.each("SELECT COUNT(*) as count FROM users where name = $name or facebook_id = $id", {$name: userName, $id: userId}, function(error, row) {
             if(row.count === 0) {
                 db.run("INSERT INTO users(facebook_id, name, score) VALUES ($id, $name, 0)", {$id: userId, $name: userName}, function() {
-                    if(this.lastID) res.sendStatus(200);
-                    console.log('user added to database!');
+                    if(this.lastID) {
+                        db.run("INSERT INTO statistics(user_id, completed_challenges, failed_challenges, declined_challenges) VALUES ($id, 0, 0, 0)", {$id: userId}, function() {
+                            if(this.lastID) res.sendStatus(200);
+                        }); //117195915492023
+                    }
                 });
             }
             else {
@@ -204,6 +207,22 @@ router.get('/highscores', function(req, res) {
 	});
 });
 
+router.get('/:user_id/statistics', function(req, res) {
+    var userID = req.params.user_id;
+    console.log('get statistics: ');
+    console.log(userID);
+    var getRow;
+    db.serialize(function() {
+        // Get all processes of specified user
+        db.all("SELECT * from STATISTICS WHERE user_id = $id", {$id: userID},function(error, row) {
+            getRow = row[0];
+            console.log(getRow);
+            res.send(JSON.stringify(row[0]));
+        });
+    });
+});
+
+
 /*
 // Favorite/unfavorite a process
 router.get('/:id/favorite/', function(req, res) {
@@ -225,166 +244,6 @@ router.get('/:id/favorites/', function(req, res) {
 		db.all("SELECT * from PROCESSES WHERE userid = $id AND favorite = 1", {$id: userID},function(error, row) {
 			getRow = row;
 			res.send(JSON.stringify(getRow));
-		});
-	});
-});
-
-// Login
-router.post('/login', function(req, res) {
-	var userName = req.body.name;
-	var userPassword = req.body.password;
-
-	db.serialize(function() {
-		db.all("SELECT user_id FROM USERS where username = $name", {$name: userName}, function(error, row) {
-			console.log(row.length);
-
-			if(row.length === 0) {
-				console.log("jskfdmfjksdm");
-				res.sendStatus(401).status('sdkfjld');
-			}
-			else if(row){
-				db.each("SELECT password, user_id, username FROM USERS where username = $name", {$name: userName}, function(error, row) {
-					if(passwordHash.verify(userPassword, row.password)) {
-						res.send({id: row.user_id, username: row.username});
-					}
-				});
-			}
-		});
-	});
-});
-
-// Add new step
-router.post('/:id/addstep', function(req, res) {
-	var step = req.body.data;
-	var processId = req.body.processId;
-	console.log(step);
-
-	db.run("INSERT INTO steps (process_id, step_name, step_time, temp, interval, chemical, dilution) VALUES ($process_id, $name, $time, $temp, $interval, $chemical, $dilution)", {$process_id: processId, $name: step.name, $time: step.duration, $temp: step.temperature, $interval: step.interval, $chemical: step.chemical, $dilution: step.dilution }, function() {
-		console.log("step id: " + this.lastID);
-		if(this.lastID) res.sendStatus(200);
-	});
-
-});
-
-// Delete step from process
-router.get('/steps/:id/delete', function(req, res) {
-	var stepid = req.params.id;
-
-	db.run("DELETE FROM STEPS WHERE step_id = $id", {$id: stepid}, function() {
-		if(this.changes) {
-			res.sendStatus(200);
-		}
-	});
-});
-
-// Edit existing step
-router.post('/steps/:id/edit', function(req, res) {
-	var stepid = req.params.id;
-	var step = req.body.data;
-
-	console.log(stepid);
-	console.log(step);
-	db.run("UPDATE STEPS SET step_name = $name, step_time = $time, temp = $temp, interval = $interval, chemical = $chemical, dilution = $dilution WHERE step_id = $id",
-		{$id: stepid,
-			$name: step.name,
-			$time: step.duration,
-			$temp: step.temperature,
-			$interval: step.interval,
-			$chemical: step.chemical,
-			$dilution: step.dilution},
-		function() {
-			if(this.changes) {
-				res.sendStatus(200);
-			}
-		});
-});
-
-// Get all steps from specific process
-router.get('/steps/:processid', function(req, res) {
-	var processid = req.params.processid;
-	var steps = [];
-
-	db.serialize(function() {
-		db.all("SELECT * FROM STEPS where process_id = $id", {$id: processid} ,function(error, row) {
-			steps = row;
-			res.send(steps);
-		});
-	});
-});
-
-// Delete a process
-router.get('/processes/:id/delete', function(req, res) {
-	var processid = req.params.id;
-	var proc, steps = false;
-	db.parallelize(function() {
-		db.run("DELETE FROM STEPS WHERE process_id = $id", {$id: processid}, function(error, row) {
-
-		});
-		db.run("DELETE FROM PROCESSES WHERE processid = $id", {$id: processid}, function(error, row) {
-			console.log(this.changes);
-			if(this.changes) res.sendStatus(200);
-		});
-	});
-});
-
-// Start a process
-router.get('/processes/:id/start', function(req, res) { // change to processes/:id/start
-	var processid = req.params.id;
-	var steps = [];
-
-	db.serialize(function() {
-		db.all("SELECT * FROM STEPS where process_id = $id", {$id: processid} ,function(error, row) {
-			steps = row;
-
-			// Start process on machine
-			if(!machine.isStarted) {
-				if(machine.start(JSON.stringify(steps))) {
-					// res.sendStatus(200);
-					db.each("SELECT sum(step_time) as duration, count(step_id) as steps FROM STEPS where process_id = $id", {$id: processid} ,function(error, row) {
-						// ADD CLEANUP + PREPARATION TIME
-						// * 5 = preparation time, * 3 = cleanup
-						res.send(JSON.stringify({status: 200, completeDuration: (row.duration + (row.steps * 8)) }));
-					});
-					// res.status(200).json({'data': {status: 'OK', data: 'testDataFullTime'}});
-				}
-			} else {
-				res.send(JSON.stringify(machine.getInfo()));
-			}
-
-		});
-	});
-});
-
-// Stop a process
-router.get('/processes/stop', function(req, res) { // change to processes/:id/stop
-	console.log("stop: " + req.params.id);
-	if(machine.stop()) {
-		res.sendStatus(200);
-	}
-});
-
-// Start or stop sending temperature sensor data
-router.get('/temperatures/:state', function(req, res) {
-	machine.getTemperatures(req.params.state);
-	res.sendStatus(200);
-});
-
-// Get all film names corresponding with search
-router.get('/devchart/:filmname', function(req, res) {
-	var filmname = "%" + req.params.filmname.toLowerCase() + "%";
-	devchartDB.serialize(function() {
-		devchartDB.all("SELECT id, film FROM PRESETS where film LIKE $name GROUP BY film", {$name: filmname} ,function(error, row) {
-			res.send(row);
-		});
-	});
-});
-
-// Get all processes from specific film stock
-router.get('/devchart/:filmname/processes', function(req, res) {
-	var filmname = "%" + req.params.filmname.toLowerCase() + "%";
-	devchartDB.serialize(function() {
-		devchartDB.all("SELECT * FROM PRESETS where film LIKE $name", {$name: filmname} ,function(error, row) {
-			res.send(row);
 		});
 	});
 });

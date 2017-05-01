@@ -14,5 +14,7 @@
         </SOURCES>
       </library>
     </orderEntry>
+    <orderEntry type="module" module-name="WMD1617-Ionic" />
+    <orderEntry type="module" module-name="HERRIE" />
   </component>
 </module>

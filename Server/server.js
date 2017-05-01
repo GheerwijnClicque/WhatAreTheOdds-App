@@ -325,11 +325,12 @@ app.post('/challenge/decline', function(req, res) {
             // if(row.count !== 0) {
                 db.run("UPDATE challenges SET rejected = $rejected, updated_at = $now WHERE challenge_id = $id ", {$rejected: 1, $now: +new Date(), $id: challengeId}, function() {
                     console.log('decline: ' + challengeId);
-
-                    if(this.changes) res.sendStatus(200);
+                    //if(this.changes) res.sendStatus(200);
+                    console.log(this.changes)
                     if(this.changes) {
                         console.log('declined challenge');
                         getChallengeById(challengeId, 'challenge-update').then((row) => {
+                            console.log('test');
                             var challengerCon = findSocketByUserId(row.challenger_id);
                             var challengeeCon = findSocketByUserId(row.challengee_id);
                             try {
@@ -340,6 +341,12 @@ app.post('/challenge/decline', function(req, res) {
                             }
 
                             try {
+                                console.log('try declined');
+
+                                db.run("UPDATE statistics SET declined_challenges = declined_challenges + 1 WHERE user_id = $id", {$id: row.challengee_id}, function() {
+                                    if(this.changes) console.log('updated declined_challenges');
+                                    console.log('declined');
+                                })    
                                 io.to(challengeeCon.id).emit('challenge-update', row);
                             }
                             catch (e) {

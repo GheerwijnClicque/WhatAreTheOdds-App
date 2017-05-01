@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../../HERRIE/.idea/HERRIE.iml" filepath="$PROJECT_DIR$/../../HERRIE/.idea/HERRIE.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/Project.iml" filepath="$PROJECT_DIR$/.idea/Project.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../WMD1617-Ionic/.idea/WMD1617-Ionic.iml" filepath="$PROJECT_DIR$/../WMD1617-Ionic/.idea/WMD1617-Ionic.iml" />
     </modules>
   </component>
 </project>
