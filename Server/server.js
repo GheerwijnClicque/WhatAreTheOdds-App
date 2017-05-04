@@ -18,7 +18,8 @@ var eventEmitter = new events.EventEmitter();
 var io = require('socket.io').listen(app.listen(config.port));
 
 var routes = require('./routes/routes');
-//var machine = require('./machine.js')();
+var achievements = require('./achievements')();
+var statistics = require('./statistics')();
 
 // app.set('views', __dirname + '/views');
 // app.set('view engine', 'ejs');
@@ -30,6 +31,14 @@ app.use(cors());
 
 app.use('/', routes);
 
+/*
+achievements.check(1532159443463111).then(function(data) {
+    console.log('new achievements: ');
+    console.log(data);
+}).catch(function(error) {
+    console.log(error);
+});
+*/
 
 var connections = {};
 
@@ -47,7 +56,7 @@ setInterval(function() {
 }, 1000);
 */
 
-// Start websocket and set machine info
+// Start websocket 
 
 io.sockets.on('connection', function(socket) {
     //console.log(socket.handshake.query['data']);
@@ -273,11 +282,6 @@ app.post('/challenge/accept', function(req, res) {
     var range = req.body.range;
     var userId = req.body.user; // TODO: could be removed?  + also remove from /guess!
 
-    console.log(challengeId);
-    console.log(range);
-    console.log(userId);
-
-
     db.serialize(function() {
         db.each("SELECT COUNT(*) as count FROM challenges where challenge_id = $id and challengee_id = $userId", {$id: challengeId, $userId: userId}, function(error, row) {
             if(row.count !== 0) {
@@ -296,11 +300,24 @@ app.post('/challenge/accept', function(req, res) {
                         }
 
                         try {
+                            statistics.update(row.challengee_id, 'accepted_challenges').then((resolved) => {
+                                if(resolved) {
+                                    achievements.check(row.challengee_id).then((data) => {
+                                        io.to(challengeeCon.id).emit('achievements-update', data);
+                                    }).catch((error) => {
+                                        console.log('Error while updating achievements: ' + error);
+                                    });
+                                }
+                            }).catch((error) => {
+                                console.log('Error while updating statistics (accept): ' + error);
+                            });
                             io.to(challengeeCon.id).emit('challenge-update', row);
                         }
                         catch (e) {
                             console.log(e);
                         }
+
+                        //Update user score
                         updateScore(row.challengee_id, 10);
                     }, (error) => {
                             console.log('error: ' + error);
@@ -341,17 +358,25 @@ app.post('/challenge/decline', function(req, res) {
                             }
 
                             try {
-                                console.log('try declined');
+                                statistics.update(row.challengee_id, 'declined_challenges').then((resolved) => {
+                                    if(resolved) {
+                                        achievements.check(row.challengee_id).then((data) => {
+                                            console.log('socketje');
+                                            io.to(challengeeCon.id).emit('achievements-update', data);
+                                        }).catch((error) => {
+                                            console.log('Error while updating achievements: ' + error);
+                                        });
+                                    }
+                                }).catch((error) => {
+                                    console.log('Error while updating statistics (decline): ' + error);
+                                });
 
-                                db.run("UPDATE statistics SET declined_challenges = declined_challenges + 1 WHERE user_id = $id", {$id: row.challengee_id}, function() {
-                                    if(this.changes) console.log('updated declined_challenges');
-                                    console.log('declined');
-                                })    
                                 io.to(challengeeCon.id).emit('challenge-update', row);
                             }
                             catch (e) {
                                 console.log(e);
                             }
+                            // Update user score
                             updateScore(row.challengee_id, -10);
                         }, (error) => {
                             console.log('error: ' + error);
@@ -390,7 +415,7 @@ app.post('/challenge/guess', function(req, res) {
                 if(this.changes) {
                     console.log('updated challenge');
                     getChallengeById(challengeId, 'challenge-update').then((row) => {
-                        var challengerCon = findSocketByUserId(row.challenger_id);
+                    var challengerCon = findSocketByUserId(row.challenger_id);
                     var challengeeCon = findSocketByUserId(row.challengee_id);
                     try {
                         io.to(challengerCon.id).emit('challenge-update', row);
@@ -484,6 +509,7 @@ app.post('/completed', function(req, res) {
     console.log(userId);
     console.log(challengeId);
     console.log(completed);
+
     db.serialize(function() {
         db.get("SELECT * FROM challenges where challenge_id = $id && challenger_id = $user", {$id: challengeId, $user: userId}, function(error, row) {
             db.run("UPDATE challenges SET updated_at = $now, challenger_turn = (NOT challenger_turn), completed = $completed WHERE challenge_id = $id ", {$now: +new Date(), $id: challengeId, $completed: completed}, function() {
@@ -501,6 +527,20 @@ app.post('/completed', function(req, res) {
                         }
 
                         try {
+                            if(!completed) {
+                                statistics.update(row.challengee_id, 'failed_challenges').then((resolved) => {
+                                    if(resolved) {
+                                        achievements.check(row.challengee_id).then((data) => {
+                                            io.to(challengeeCon.id).emit('achievements-update', data);
+                                        }).catch((error) => {
+                                            console.log('Error while updating achievements: ' + error);
+                                        });
+                                    }
+                                }).catch((error) => {
+                                    console.log('Error while updating statistics (accept): ' + error);
+                                });
+                            }
+
                             io.to(challengeeCon.id).emit('challenge-update', row);
                         }
                         catch (e) {

@@ -128,14 +128,31 @@ router.get('/users', function(req, res) {
         // Get all processes of specified user
         db.all("SELECT * from USERS",function(error, row) {
             getRow = row;
-            console.log(row);
             res.send(JSON.stringify(getRow));
         });
     });
 });
 
 
+router.get('/:user_id/achievements', function(req, res) {
+    var userID = req.params.user_id;
+    var getRow;
+    db.serialize(function() {
+        // Get all processes of specified user
+        db.all("SELECT * from USER_HAS_ACHIEVEMENTS WHERE user_id = $id", {$id: userID},function(error, row) {
+            getRow = row;
+            if(row) {
+                console.log('achievements:');
+                console.log(row);
+                res.send(JSON.stringify(row));
+            }
+            else {
+                console.log('no achievements found');
+            }
 
+        });
+    });
+});
 /*
 // Get all processes of user
 router.get('/:id/processes', function(req, res) {
@@ -214,10 +231,10 @@ router.get('/:user_id/statistics', function(req, res) {
     var getRow;
     db.serialize(function() {
         // Get all processes of specified user
-        db.all("SELECT * from STATISTICS WHERE user_id = $id", {$id: userID},function(error, row) {
-            getRow = row[0];
+        db.get("SELECT * from STATISTICS WHERE user_id = $id", {$id: userID},function(error, row) {
+            getRow = row;
             console.log(getRow);
-            res.send(JSON.stringify(row[0]));
+            res.send(JSON.stringify(row));
         });
     });
 });
