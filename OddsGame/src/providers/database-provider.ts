@@ -154,4 +154,8 @@ export class DatabaseProvider {
   getStatistics(userId) {
     return this.http.get(URL + userId + '/statistics');
   }
+
+  getAchievements(userId) {
+      return this.http.get(URL + userId + '/achievements');
+  } 
 }

@@ -30,7 +30,9 @@ import { SearchByChallenge} from './pipes/search';
 
 import { HttpModule } from '@angular/http';
 import { Keyboard } from '@ionic-native/keyboard';
-import {NgSwitch, NgSwitchCase} from '@angular/common'
+import { NgSwitch, NgSwitchCase } from '@angular/common';
+
+
 @NgModule({
   declarations: [
     MyApp,

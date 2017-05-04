@@ -1,5 +1,5 @@
 import { Component, NgZone, ViewChild } from '@angular/core';
-import { NavController, AlertController, Content } from 'ionic-angular';
+import { NavController, AlertController, Content, ToastController } from 'ionic-angular';
 
 import { Facebook } from '@ionic-native/facebook';
 
@@ -41,7 +41,9 @@ export class HomePage {
 
   private enableNamePeek = false;
 
-  constructor(public navCtrl: NavController, private pipe: ChallengesPipe, private keyboard: Keyboard, public fb: Facebook, public storage: Storage, public db: DatabaseProvider, public alertCtrl: AlertController, private zone: NgZone) {
+  constructor(public navCtrl: NavController, private pipe: ChallengesPipe, private keyboard: Keyboard, public fb: Facebook, 
+              public storage: Storage, public db: DatabaseProvider, public alertCtrl: AlertController, private zone: NgZone,
+              private toastCtrl: ToastController) {
     //this.zone = new NgZone({enableLongStackTrace: false});
     storage.get('user').then((value) => {
         let userId = JSON.parse(value).id;
@@ -49,8 +51,7 @@ export class HomePage {
         this.zone.run(() => {
           this.getChallenges();
           this.getScore();
-        });
-     
+        });      
     });
   }
 
@@ -60,7 +61,6 @@ export class HomePage {
 
   ionViewWillEnter() {
     //this.getfriends();
-  
 
     this.storage.get('user').then((value) => {
       let userId = JSON.parse(value).id;
@@ -108,6 +108,11 @@ export class HomePage {
           //this.storage.set('score', score);
           alert(score);
         })
+      });
+
+      this.socket.on('achievements-update', (achievements) => {
+        alert('achievements');
+        alert(achievements);
       });
 
     });

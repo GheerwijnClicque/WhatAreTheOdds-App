@@ -1,5 +1,5 @@
 import { Component, NgZone } from '@angular/core';
-import { NavController, ModalController, NavParams, ActionSheetController } from 'ionic-angular';
+import { NavController, ModalController, NavParams, ActionSheetController, ToastController } from 'ionic-angular';
 
 import { Storage } from '@ionic/storage';
 
@@ -34,7 +34,7 @@ export class ChallengeDetail {
 
   constructor(public navCtrl: NavController, public storage: Storage, private modalCtrl: ModalController, private fb: Facebook,
               private zone: NgZone, private navParams: NavParams, private db: DatabaseProvider, private actionSheetCtrl: ActionSheetController,
-              private camera: Camera, private sanitizer: DomSanitizer, private transfer: Transfer) {
+              private camera: Camera, private sanitizer: DomSanitizer, private transfer: Transfer, private toastCtrl: ToastController) {
     this.challenge = this.navParams.get('challenge');
     this.equalsGuesses();
   }
@@ -53,6 +53,24 @@ export class ChallengeDetail {
         this.zone.run(() => {
           this.challenge = challenge;
         })
+      });
+
+      this.socket.on('achievements-update', (achievements) => {
+        if(achievements) {
+          var message = 'Achievement "' + achievements[0].name + '" unlocked!';
+          alert(achievements.length);
+          if(achievements.length > 1) {
+              message += '(' + achievements.length + ' new)';
+          }
+
+          let toast = this.toastCtrl.create({
+            message: message,
+            duration: 3000,
+            position: 'top',
+            cssClass: 'achievement-toast',
+          });
+          toast.present();
+        }
       });
     });
   }
@@ -75,7 +93,8 @@ export class ChallengeDetail {
 
     // TODO: remove from database -> new field: rejected? updated_at
     // TODO: inform challenger!
-    this.navCtrl.pop();
+
+    //this.navCtrl.pop();
   }
 
 

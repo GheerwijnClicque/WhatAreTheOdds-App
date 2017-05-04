@@ -107,6 +107,13 @@ $searchbar-ios-input-clear-icon-color: color($colors, app, contrast);
 $badge-ios-background-color: color($colors, app, contrast);
 $badge-ios-text-color: color($colors, app, dark);
 
+//Toasts
+$toast-ios-background: color($colors, app, dark);
+$toast-ios-title-color: color($colors, app, contrast);
+$toast-ios-border-radius: 3px;
+
+
+
 // App Material Design Variables
 // --------------------------------------------------
 // Material Design only Sass variables can go here

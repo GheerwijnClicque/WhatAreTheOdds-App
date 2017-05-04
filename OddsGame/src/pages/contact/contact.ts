@@ -20,6 +20,10 @@ export class ContactPage {
   picture: any;
   pieChart: any;
   statistics: any = [];
+  achievements: any = [];
+
+  selectedSegment: string = "statistics";
+
 
   constructor(public navCtrl: NavController, private storage: Storage, private fb: Facebook, private db: DatabaseProvider, private modalCtrl: ModalController, private actionSheetCtrl: ActionSheetController) {
 
@@ -27,7 +31,7 @@ export class ContactPage {
       var url = response.data.url;
       this.picture = response.data.url;
     }.bind(this), function(error) {
-      alert(error);
+      console.log(error);
     });
 
   }
@@ -37,18 +41,7 @@ export class ContactPage {
       this.user_name = JSON.parse(value).name;
       this.user_id = JSON.parse(value).id;
 
-      this.db.getStatistics(this.user_id).map(res => res.json()).subscribe(response => {
-          //  this.statistics['completed_challenges'] = response['completed_challenges'];
-          //  this.statistics['failed_challenges'] = response['failed_challenges'];
-          //  this.statistics['declined_challenges'] = response['declined_challenges'];
-            this.statistics = response;
-            this.renderChart();
-          },
-          error => {
-            console.log(error);
-            alert(error);
-          },
-          () => console.log("Finished"));
+    this.selectSegment();
 
     }.bind(this));
 
@@ -97,7 +90,6 @@ export class ContactPage {
           role: 'destructive',
           handler: () => {
             this.fb.logout().then(function(response) {
-              alert(JSON.stringify(response));
               this.storage.remove('user');
               //this.navCtrl.setRoot(Login);
               let loginModal = this.modalCtrl.create(Login);
@@ -123,7 +115,6 @@ export class ContactPage {
   request() {
     this.fb.api('me/picture?redirect=false', ['public_profile']).then(function(response) {
       var url = response.data.url;
-      alert(url);
       this.picture = response.data.url;
     }.bind(this), function(error) {
       alert(error);
@@ -131,6 +122,42 @@ export class ContactPage {
   }
 
   selectedTabChanged($event): void {
-    alert('changed');
+
+    this.selectSegment();
   }
+
+  selectSegment() {
+    switch(this.selectedSegment) {
+      case 'achievements':
+          this.getAchievements();
+          break;
+      case 'statistics':
+            this.db.getStatistics(this.user_id).map(res => res.json()).subscribe(response => {
+          //  this.statistics['completed_challenges'] = response['completed_challenges'];
+          //  this.statistics['failed_challenges'] = response['failed_challenges'];
+          //  this.statistics['declined_challenges'] = response['declined_challenges'];
+            this.statistics = response;
+            this.renderChart();
+          },
+          error => {
+            console.log(error);
+          },
+          () => console.log("Finished"));
+
+          break;
+      case 'settings':
+          break;
+    }
+  }
+
+  getAchievements() {
+    this.db.getAchievements(this.user_id).map(res => res.json()).subscribe(response => {
+        this.achievements = response;
+      },
+      error => {
+        console.log(error);
+      },
+      () => console.log("Finished"));
+  }
+
 }
