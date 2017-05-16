@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { NavController, ModalController, ActionSheetController } from 'ionic-angular';
+import { NavController, ModalController, ActionSheetController, PopoverController } from 'ionic-angular';
 import { NgSwitch, NgSwitchCase } from '@angular/common'
 import { Storage } from '@ionic/storage';
 
@@ -8,6 +8,7 @@ import { Facebook } from '@ionic-native/facebook';
 import { Login } from '../login/login';
 import { Chart } from 'chart.js';
 import { DatabaseProvider } from '../../providers/database-provider';
+import { PopoverPage } from '../popover/popover';
 
 @Component({
   selector: 'page-contact',
@@ -25,15 +26,14 @@ export class ContactPage {
   selectedSegment: string = "statistics";
 
 
-  constructor(public navCtrl: NavController, private storage: Storage, private fb: Facebook, private db: DatabaseProvider, private modalCtrl: ModalController, private actionSheetCtrl: ActionSheetController) {
-
-    this.fb.api('me/picture?redirect=false', ['public_profile']).then(function(response) {
-      var url = response.data.url;
-      this.picture = response.data.url;
-    }.bind(this), function(error) {
-      console.log(error);
-    });
-
+  constructor(public navCtrl: NavController, private storage: Storage, private fb: Facebook, private db: DatabaseProvider, private modalCtrl: ModalController, 
+              private actionSheetCtrl: ActionSheetController, private popoverCtrl: PopoverController) {
+      this.fb.api('me/picture?redirect=false', ['public_profile']).then(function(response) {
+        var url = response.data.url;
+        this.picture = response.data.url;
+      }.bind(this), function(error) {
+        console.log(error);
+      });
   }
 
   ionViewWillEnter() {
@@ -44,8 +44,6 @@ export class ContactPage {
     this.selectSegment();
 
     }.bind(this));
-
-    
   }
 
   renderChart() {
@@ -70,6 +68,7 @@ export class ContactPage {
         }]
       },
       options: {
+        responsive: true,
         legend: {
           display: true,
           position: 'bottom',
@@ -77,6 +76,30 @@ export class ContactPage {
         },
       }
     };
+
+    let that = this;
+    Chart.pluginService.register({
+      beforeDraw: function(chart) {
+        var width = chart.chart.width,
+            height = chart.chart.height,
+            ctx = chart.chart.ctx;
+
+        ctx.restore();
+        var fontSize = (height / 190).toFixed(2);
+        ctx.font = fontSize + "em sans-serif";
+        ctx.textBaseline = "middle";
+        ctx.fillStyle = '#fff';
+
+        let score = that.statistics['score'];
+        console.log(score);
+        var text = "score: " + score,
+            textX = Math.round((width - ctx.measureText(text).width) / 2),
+            textY = (height / 2) - 10;
+
+        ctx.fillText(text, textX, textY);
+        ctx.save();
+      }
+    });
 
     this.pieChart = new Chart(this.pieChartCanvas.nativeElement, options);
   }
@@ -122,7 +145,6 @@ export class ContactPage {
   }
 
   selectedTabChanged($event): void {
-
     this.selectSegment();
   }
 
@@ -153,11 +175,19 @@ export class ContactPage {
   getAchievements() {
     this.db.getAchievements(this.user_id).map(res => res.json()).subscribe(response => {
         this.achievements = response;
+        console.log(response);
       },
       error => {
         console.log(error);
       },
       () => console.log("Finished"));
+  }
+
+  achievementInfo(myEvent, achievement) {
+     let popover = this.popoverCtrl.create(PopoverPage, {achievement: achievement});
+      popover.present({
+        ev: myEvent
+      });
   }
 
 }

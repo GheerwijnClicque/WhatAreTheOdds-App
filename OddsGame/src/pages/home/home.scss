@@ -15,3 +15,13 @@ page-home {
 ion-icon {
   color: color($colors, app, contrast);
 }
+
+ion-icon[name="checkmark"] {
+  font-size: 35px;
+  margin: -5px 0px -5px 0px;
+  color: color($colors, app, green);
+}
+
+.challenge-completed {
+  color: color($colors, app, green);
+  }

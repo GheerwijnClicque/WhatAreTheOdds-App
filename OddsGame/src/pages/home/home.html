@@ -7,7 +7,7 @@
           <ion-searchbar (ionInput)="search($event)" [showCancelButton]="enableSearch" (ionCancel)="toggleSearch()" placeholder="Search"></ion-searchbar>
       </div>
       <div *ngIf="!enableSearch">
-          <ion-title navbarColor>{{score}}</ion-title>
+          <ion-title start navbarColor>{{score}}</ion-title>
           <ion-buttons end>
               <button ion-button icon-only (tap)="toggleSearch()">
                   <ion-icon name="search"></ion-icon>
@@ -28,15 +28,21 @@
     <ion-list no-lines>
         <ion-item-group>
           <ion-item-divider>Active challenges<ion-badge item-right>{{(myChallenges.slice().reverse() | ChallengesPipe: [1]).length}}</ion-badge></ion-item-divider>  <!-- // TODO: add badge for how many challenges! -->
-          <ion-item *ngFor="let challenge of myChallenges.slice().reverse() | ChallengesPipe: [1] | searchByChallenge: searchTerm" detail-push (tap)="challengeDetail(challenge)" (press)="handlePress(challenge)">
-              {{challenge.display}}
-          </ion-item>
+          <div *ngFor="let challenge of myChallenges.slice().reverse() | ChallengesPipe: [1] | searchByChallenge: searchTerm">
+            <ion-item *ngIf="!challenge.completed" detail-push (click)="challengeDetail(challenge)" (press)="handlePress(challenge)">
+                {{challenge.display}}
+            </ion-item>
+              <ion-item *ngIf="challenge.completed && !isChallenger(challenge)" class="challenge-completed" (press)="handlePress(challenge)">
+                {{challenge.display}} <span item-right><ion-icon name="checkmark"></ion-icon></span>
+            </ion-item>
+          </div>
+     
           <ion-item-divider>Pending challenges<ion-badge item-right>{{(myChallenges.slice().reverse() | ChallengesPipe: [0]).length}}</ion-badge></ion-item-divider> <!-- // TODO: add badge for how many challenges! -->
             <div *ngFor="let challenge of myChallenges.slice().reverse() | ChallengesPipe: [0]" >
                 <ion-item *ngIf="isChallenger(challenge)" [ngClass]="{'item-disabled': challenge.rejected}" class="item-lines">
                     {{challenge.display}}<span item-right>{{challenge.created_at | TimeSincePipe }}</span>
                 </ion-item>
-                <ion-item *ngIf="!isChallenger(challenge)" [ngClass]="{'item-disabled': challenge.rejected}" detail-push class="item-lines" (tap)="challengeDetail(challenge)">
+                <ion-item *ngIf="!isChallenger(challenge)" [ngClass]="{'item-disabled': challenge.rejected}" detail-push class="item-lines" (click)="challengeDetail(challenge)">
                     {{challenge.display}}<span item-right>{{challenge.created_at | TimeSincePipe }}</span>
                 </ion-item>
             </div>

@@ -12,6 +12,7 @@ import { Challenge } from '../pages/challenge/challenge';
 import { ChallengeDetail } from '../pages/challenge-detail/challenge-detail';
 import { ChallengeRange } from '../pages/challenge-range/challenge-range';
 import { FriendsPage } from '../pages/friends/friends';
+import { PopoverPage } from '../pages/popover/popover';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -48,7 +49,8 @@ import { NgSwitch, NgSwitchCase } from '@angular/common';
     ChallengesPipe,
     TimeSincePipe,
     SearchByName,
-    SearchByChallenge
+    SearchByChallenge,
+    PopoverPage
   ],
   imports: [
     BrowserModule,
@@ -70,7 +72,8 @@ import { NgSwitch, NgSwitchCase } from '@angular/common';
     Login,
     Challenge,
     ChallengeDetail,
-    ChallengeRange
+    ChallengeRange,
+    PopoverPage
   ],
   providers: [
     StatusBar,

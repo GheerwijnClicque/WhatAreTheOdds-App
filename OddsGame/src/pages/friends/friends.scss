@@ -2,3 +2,30 @@ page-about {
 
 }
 
+.alert-message {
+    color: color($colors, app, contrast);
+    .ion-backdrop {
+        background-color: color($colors, app, base);
+    }
+
+    .alert-wrapper {
+        background-color: color($colors, app, base);
+    }
+
+    .challenge-button {
+        color: color($colors, app, green);
+        //background-color: color($colors, app, green);
+    }
+
+    .cancel-button {
+        color: color($colors, app, red);
+    }
+
+  
+
+    .alert-button {
+      //  border: none;
+        //border-top: none;
+        border: 0.55px solid color($colors, app, dark);
+    }
+}

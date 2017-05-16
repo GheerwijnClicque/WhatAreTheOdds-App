@@ -19,6 +19,7 @@ import { Transfer, FileUploadOptions, TransferObject } from '@ionic-native/trans
 import { server } from '../../providers/server-info';
 
 const URL = server.URL;
+const FILESERVERURL = server.FILESERVERURL;
 
 @Component({
   selector: 'page-challenge-detail',
@@ -28,8 +29,9 @@ export class ChallengeDetail {
   challenge: any;
   private user_id: any = 0;
   private guess: number = 1;
-
+  private serverInfo: any;
   private socket: any;
+  private imageUrl: string = '';
 
 
   constructor(public navCtrl: NavController, public storage: Storage, private modalCtrl: ModalController, private fb: Facebook,
@@ -37,6 +39,10 @@ export class ChallengeDetail {
               private camera: Camera, private sanitizer: DomSanitizer, private transfer: Transfer, private toastCtrl: ToastController) {
     this.challenge = this.navParams.get('challenge');
     this.equalsGuesses();
+    this.serverInfo = server;
+        console.log('serverInfo');
+
+    console.log(this.serverInfo);
   }
 
   ionViewWillLeave() {
@@ -58,7 +64,6 @@ export class ChallengeDetail {
       this.socket.on('achievements-update', (achievements) => {
         if(achievements) {
           var message = 'Achievement "' + achievements[0].name + '" unlocked!';
-          alert(achievements.length);
           if(achievements.length > 1) {
               message += '(' + achievements.length + ' new)';
           }
@@ -80,7 +85,7 @@ export class ChallengeDetail {
     modal.present();
     modal.onDidDismiss(data => {
       if(data) {
-        this.challenge.challenge = 'Accepted, wait for your turn';
+        //this.challenge.challenge = 'Accepted, wait for your turn';
         // TODO: remove buttons and show turn?
         //this.navCtrl.pop();
       }
@@ -94,7 +99,7 @@ export class ChallengeDetail {
     // TODO: remove from database -> new field: rejected? updated_at
     // TODO: inform challenger!
 
-    //this.navCtrl.pop();
+    this.navCtrl.pop();
   }
 
 
@@ -157,6 +162,7 @@ export class ChallengeDetail {
   /////// ///////
 
    presentActionSheet() {
+
     let actionSheet = this.actionSheetCtrl.create({
       title: 'Select Image Source',
       buttons: [
@@ -193,7 +199,6 @@ export class ChallengeDetail {
     targetHeight: 500
   };
 
-  imageUrl: any;
   takePicture() {
     this.camera.getPicture(this.options).then((imageData) => {
       // imageData is either a base64 encoded string or a file URI
@@ -226,6 +231,10 @@ export class ChallengeDetail {
     });
   }
 
+  removeImage() {
+    this.imageUrl = '';
+  }
+
   error: any;
   uploadSucceeded: boolean = false;
   upload() {
@@ -241,10 +250,10 @@ export class ChallengeDetail {
 
       //params : {'fileName': filename}
 
-    }
+  }
 
 
-    fileTransfer.upload(this.imageUrl, 'http://192.168.0.199:8888/Web&MobileDev/Project/Server/fileserver.php', options)
+    fileTransfer.upload(this.imageUrl, 'http://' + URL + ':8888/Web&MobileDev/Project/Server/fileserver.php', options)
         .then((data) => {
           // success
             this.db.uploadImageURL(this.user_id, options.fileName, this.challenge.challenge_id).subscribe(data => {
@@ -263,7 +272,7 @@ export class ChallengeDetail {
   }
 
   hasImage() {
-    return this.challenge.image_url;
+    return this.challenge.image_url; // || this.image_url
   }
 
   isCompleted() {
@@ -274,6 +283,7 @@ export class ChallengeDetail {
     this.db.completed(this.user_id, this.challenge.challenge_id, state).subscribe(data => {
         console.log(data)
         this.challenge.completed = state;
+        this.navCtrl.pop();
       },
       error => {
         console.log(error);

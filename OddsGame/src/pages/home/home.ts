@@ -125,6 +125,8 @@ export class HomePage {
    /* this.storage.get('test').then((test) => {
       console.log(test);
     }); */
+          this.getChallenges();
+
   }
 
 
@@ -235,4 +237,5 @@ export class HomePage {
       }, 1000);
     });
   }
+
 }

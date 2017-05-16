@@ -1,11 +1,11 @@
 <ion-header>
-  <ion-navbar>
+<!--  <ion-navbar>
     <ion-title>
       {{user_name}}
     </ion-title>
-  </ion-navbar>
+  </ion-navbar> -->
    <ion-toolbar>
-    <ion-segment [(ngModel)]="selectedSegment" color="secondary" (ionChange)="selectedTabChanged($event)">
+    <ion-segment [(ngModel)]="selectedSegment" (ionChange)="selectedTabChanged($event)">
       <ion-segment-button value="statistics">
         <!-- <ion-icon name="camera"></ion-icon> -->
         Statistics
@@ -25,20 +25,29 @@
 <ion-content>
         <div [ngSwitch]="selectedSegment">
             <div *ngSwitchCase="'statistics'">
-           
-                 <div style="width: 65%; margin: 0 auto; padding-top: 40px;">
+                 <div style="width: 95%; margin: 0 auto; padding-top: 40px;">
                     <canvas #pieChartCanvas></canvas>
                 </div>
+                <ion-list no-lines>
+                    <ion-item>
+                        <span>Best score: </span> <span item-right>over 9000</span>
+                    </ion-item>
+                </ion-list>
             </div>
             <div *ngSwitchCase="'achievements'">
                 <ion-list>
-                    <ion-item *ngFor="let achievement of achievements" >
-                        <span>{{achievement.name}}</span>
+                    <ion-item *ngFor="let achievement of achievements" [ngClass]="achievement.achieved ? 'achieved' : 'not-achieved'">
+                        <div class="achievement-title">
+                           <ion-icon [name]="achievement.achieved ? 'star' : 'star-outline'"></ion-icon> <span>{{achievement.name}}</span> 
+                        </div>
+                        <div class="achievement-description">
+                            <span>{{achievement.rule}}</span>
+                        </div>
                     </ion-item>
                 </ion-list>
             </div>
             <div *ngSwitchCase="'settings'">
-             
+                <button ion-button color="danger" class="button-red button-red-block" (click)="logout()">Logout</button>
             </div>
         </div>
 

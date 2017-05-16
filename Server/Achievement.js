@@ -21,6 +21,10 @@ class Achievement {
 	getRule() {
 		return this.rule;
 	}
+
+	toObject() {
+		return {name: this.name, rule: this.rule, achieved: 0};
+	}
 }
 
 module.exports = Achievement;

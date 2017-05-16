@@ -33,11 +33,17 @@ export class TimeSincePipe {
             return interval + "h";
         }
         interval = Math.floor(seconds / 60);
-        if (interval > 1) {
-            return interval + "min";
+        console.log('interval: ' + interval);
+        if (interval >= 1) {
+            return interval + "m";
         }
 
-        return Math.floor(seconds) + "s";
+        if(seconds >= 0 && seconds < 30) {
+            return 'now';
+        }
+        else {
+            return Math.floor(seconds) + "s";
+        }
     }
 }
 

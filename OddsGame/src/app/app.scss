@@ -15,7 +15,10 @@
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
 
-
+  .alert-ios .alert-input{
+        color: color($colors, app, base);
+    } 
+    
 .item-disabled {
   pointer-events: none;
   color: lightgrey;
@@ -108,4 +111,13 @@ h1, h2, h3, h4, h5 {
 }
 
 .achievement-toast {
+}
+
+.segment-button {
+  color: white;
+}
+
+.segment-button .segment-button-activated {
+  background-color: color($colors, app, green) !important;
+  color: color($colors, app, base) !important;
 }

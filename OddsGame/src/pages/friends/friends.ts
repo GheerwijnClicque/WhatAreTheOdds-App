@@ -12,6 +12,8 @@ import { SearchByName } from '../../app/pipes/search';
 })
 export class FriendsPage {
   users: any;
+  friends: any;
+
   backupUsers: any;
 
   searchTerm: string = '';
@@ -23,19 +25,20 @@ export class FriendsPage {
   //TODO: IMPLEMENT PULL TO REFRESH!!
 
   getUsers() {
-    /*this.storage.get('user').then((user) => {
-      this.db.getFriends(JSON.parse(user).id).map(res => res.json()).subscribe(response => {
-        this.users = Object.keys(response).map((key) => { return response[key]; });
+/*    this.storage.get('user').then((user) => {
+      let userID = JSON.parse(user).id;
+      this.db.getFriends(userID).map(res => res.json()).subscribe(response => {
+        this.friends = Object.keys(response).map((key) => { return response[key]; });
       },
       error => {
         console.log(error);
       },
       () => console.log("Finished"));
-    //);*/
+    }); */
 
       this.db.getUsers().map(res => res.json()).subscribe(response => {
             this.users = Object.keys(response).map((key) => { return response[key]; });
-            this.backupUsers = this.users;
+            //this.backupUsers = this.users;
       },
       error => {
         console.log(error);
@@ -59,6 +62,7 @@ export class FriendsPage {
   challengeFriend(user) {
     let prompt = this.alertCtrl.create({
       title: 'Challenge',
+      cssClass: 'alert-message',
       message: "What are the odds that you will...",
       inputs: [
         {
@@ -69,19 +73,23 @@ export class FriendsPage {
       buttons: [
         {
           text: 'Cancel',
+          cssClass: 'cancel-button',
           handler: data => {
             console.log('Cancel clicked');
           }
         },
         {
-          text: 'Save',
+          text: 'Challenge',
+          cssClass: 'challenge-button',
           handler: data => {
             console.log('Saved clicked');
             //this.challenge = data.challenge;
-            this.storage.get('user').then((value) => {
-              let userId = JSON.parse(value).id;
-              this.db.challenge(userId, user.facebook_id, data.challenge);
-            });
+            if(data.challenge !== '') {
+              this.storage.get('user').then((value) => {
+                let userId = JSON.parse(value).id;
+                this.db.challenge(userId, user.facebook_id, data.challenge);
+              });
+            }
           }
         }
       ]

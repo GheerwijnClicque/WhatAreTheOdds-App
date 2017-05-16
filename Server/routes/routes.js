@@ -3,6 +3,7 @@ var _ = require('lodash');
 
 var sqlite3 = require('sqlite3').verbose();
 var db = new sqlite3.Database('odds_database.db');
+var achievements = require('../achievements')();
 
 //var io = require('socket.io');
 
@@ -144,12 +145,22 @@ router.get('/:user_id/achievements', function(req, res) {
             if(row) {
                 console.log('achievements:');
                 console.log(row);
-                res.send(JSON.stringify(row));
+
+                let ads = achievements.getAchievementsAsObjects();
+                                
+                ads.forEach(function(achievement, index) {
+                    row.forEach(function(entry) {
+                        if(achievement.name === entry.name) {
+                            ads[index] = entry;
+                        }
+                    });
+                });
+                res.send(JSON.stringify(ads))
             }
             else {
                 console.log('no achievements found');
+                res.send(JSON.stringify(achievements.getAchievementsAsObjects()));
             }
-
         });
     });
 });
@@ -229,15 +240,39 @@ router.get('/:user_id/statistics', function(req, res) {
     console.log('get statistics: ');
     console.log(userID);
     var getRow;
+    var that = this;
     db.serialize(function() {
         // Get all processes of specified user
         db.get("SELECT * from STATISTICS WHERE user_id = $id", {$id: userID},function(error, row) {
             getRow = row;
-            console.log(getRow);
-            res.send(JSON.stringify(row));
+            if(row) {
+                getScore(userID).then((data) => {
+                    row['score'] = data.score;
+                    res.send(JSON.stringify(row));
+                    console.log(row);
+                }).catch((error) => {
+                    console.log(error);
+                });
+            }
+
         });
     });
 });
+
+var getScore = function(id) {
+    return new Promise(function(resolve, reject) {
+        db.serialize(function() {
+        db.get("SELECT score FROM USERS where facebook_id = $id", {$id: id}, function(error, row) {
+            if(row) {
+                resolve(row);
+            }
+            else {
+                reject(error);
+            }
+        });
+    });
+    });
+}
 
 
 /*

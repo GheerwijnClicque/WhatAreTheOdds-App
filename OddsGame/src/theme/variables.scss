@@ -33,7 +33,9 @@ $colors: (
   dark:       #222,
   app: (
     base:       #424D58,
+    base-inactive: #6e7f91,
     dark:       #2A3540,
+    light:       #a7bbd1,
     inactive:   #51BA84,
     contrast:   #fff,
     green:      #79f2a9,
@@ -112,7 +114,9 @@ $toast-ios-background: color($colors, app, dark);
 $toast-ios-title-color: color($colors, app, contrast);
 $toast-ios-border-radius: 3px;
 
-
+//Segment
+$segment-button-ios-background-color-activated: color($colors, app, green);
+$segment-button-ios-text-color: color($colors, app, base);
 
 // App Material Design Variables
 // --------------------------------------------------
