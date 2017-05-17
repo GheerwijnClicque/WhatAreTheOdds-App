@@ -64,10 +64,11 @@ export class FriendsPage {
       title: 'Challenge',
       cssClass: 'alert-message',
       message: "What are the odds that you will...",
+      enableBackdropDismiss: true,
       inputs: [
         {
           name: 'challenge',
-          placeholder: 'e.g. keep your hands up for 1h?'
+          placeholder: 'e.g. keep your hands up for 1h?',
         },
       ],
       buttons: [
@@ -84,7 +85,8 @@ export class FriendsPage {
           handler: data => {
             console.log('Saved clicked');
             //this.challenge = data.challenge;
-            if(data.challenge !== '') {
+            console.log(data.challenge.length);
+            if(data.challenge !== '' && data.challenge.length <= 30) {
               this.storage.get('user').then((value) => {
                 let userId = JSON.parse(value).id;
                 this.db.challenge(userId, user.facebook_id, data.challenge);

@@ -121,3 +121,7 @@ h1, h2, h3, h4, h5 {
   background-color: color($colors, app, green) !important;
   color: color($colors, app, base) !important;
 }
+
+ion-card img{
+  margin-top: 20px;
+}

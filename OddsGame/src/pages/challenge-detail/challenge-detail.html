@@ -11,25 +11,34 @@
         <!-- <ion-list-header>Follow us on Twitter</ion-list-header> -->
 
         <!--{{myTurn()}}-->
-        <div *ngIf="!imageUrl" style="height: 80px; margin-top: 10%;">
-            <h1 color="contrast">"{{challenge.challenge}}"</h1>
+        <div *ngIf="!imageUrl && !hasImage()">
+            <div  style=" margin-top: 10%; padding: 5%;">
+                <h1 color="contrast">"{{challenge.challenge}}"</h1>
+            </div>
+            <div *ngIf="(isAccepted() || isChallenger()) && (!imageUrl && !hasImage()) && !guessesMade()" style="margin-top: 10px;">  <!--|| challenge.challenger_id === user.id (or just make it an entry without detail? -->
+                <h4>The odds are <h1>{{challenge.range}}</h1></h4>
+            </div>
         </div>
-        <div *ngIf="(isAccepted() || isChallenger()) && !imageUrl" style="height: 90px">  <!--|| challenge.challenger_id === user.id (or just make it an entry without detail? -->
-            <h4>The odds are <h1>{{challenge.range}}</h1></h4>
-        </div>
+
 
 
         <div *ngIf="equalsGuesses() && guessesMade()">
+            <div *ngIf="isChallenger() && !hasImage()">
+                <h4>You guessed the same!</h4>
+                <p>Waiting for proof of completion</p>
+            </div>
             <div *ngIf="!isChallenger() && !hasImage()" >
                 <div *ngIf="!imageUrl">
-                    <h4>You guessed the same!</h4>
-                    <p>Upload a picture to show you completed the challenge!</p>
+                    <div style="margin-top: 20px;">
+                        <h4>You guessed the same!</h4>
+                        <p>Upload a picture to show you completed the challenge!</p>
+                    </div>
                     <div class="div-bottom">
                         <button ion-button color="secondary" class="button-green" (click)="takePicture()">Take Image</button>
                         <button ion-button color="secondary" class="button-green" (click)="selectFromLibrary()">Select Image</button>
                     </div>
                 </div>
-                <ion-card style="width: 80%; margin: 0 auto; margin-top: 10%;">
+                <ion-card style="width: 80%; margin: 0 auto;">
                     <img [src]="sanitizer.bypassSecurityTrustUrl(imageUrl)" *ngIf="imageUrl" />
                 </ion-card>
                 <div *ngIf="imageUrl" class="div-bottom">
@@ -38,20 +47,17 @@
                 </div>
             </div>
 
-            <div *ngIf="isChallenger() && hasImage()" class="div-bottom">
-                <ion-card style="width: 80%; margin: 0 auto; margin-top: 10%;">
+            <div *ngIf="hasImage() && !isCompleted()">
+                <!-- <p color="contrast">"{{challenge.challenge}}"</p> -->
+                <ion-card style="width: 80%; margin: 0 auto;">
                     <img src="{{serverInfo.FILESERVERURL}}/{{challenge.image_url}}"/>
                 </ion-card>
-                <div class="div-bottom">
+                <div *ngIf="isChallenger()" class="div-bottom">
                     <button ion-button color="secondary" class="button-green" (click)="judgeChallenge(true)">Good</button>
                     <button ion-button color="danger" class="button-red" (click)="judgeChallenge(false)">Bad</button>
                 </div>
           
             </div>
-        </div>
-
-        <div *ngIf="isCompleted()">
-            COMPLETED THIS CHALLENGE! IT WILL BE REMOVED IN 24H!
         </div>
 
         <div *ngIf="!equalsGuesses() && !guessesMade()">
