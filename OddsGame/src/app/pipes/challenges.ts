@@ -26,7 +26,10 @@ export class ChallengesPipe {
                 }
             }
             else if(obj.accepted === args[0] && args[0] === 1){
-                if(!obj.peek) {
+                if(!obj.peek && obj.challenger_id === parseInt(JSON.parse(this.user).id)) {
+                    return obj['display'] = 'You - ' + obj.challengee_name;
+                }
+                else if(!obj.peek) {
                     return obj['display'] = obj.challenger_name + ' - ' + obj.challengee_name;
                 }
                 else {

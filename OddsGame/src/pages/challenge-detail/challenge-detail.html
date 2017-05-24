@@ -34,12 +34,16 @@
                         <p>Upload a picture to show you completed the challenge!</p>
                     </div>
                     <div class="div-bottom">
+                        <button ion-button color="danger" class="button-red" (click)="recordVideo()">Record Video</button>
+                        <button ion-button color="danger" class="button-red" (click)="selectVideo()">Select Video</button>
+
                         <button ion-button color="secondary" class="button-green" (click)="takePicture()">Take Image</button>
                         <button ion-button color="secondary" class="button-green" (click)="selectFromLibrary()">Select Image</button>
                     </div>
                 </div>
                 <ion-card style="width: 80%; margin: 0 auto;">
                     <img [src]="sanitizer.bypassSecurityTrustUrl(imageUrl)" *ngIf="imageUrl" />
+                    <video #myvideo></video>
                 </ion-card>
                 <div *ngIf="imageUrl" class="div-bottom">
                     <button ion-button color="danger" class="button-red" *ngIf="imageUrl" (click)="upload()">Send</button>

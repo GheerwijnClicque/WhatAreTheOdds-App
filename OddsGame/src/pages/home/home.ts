@@ -40,6 +40,7 @@ export class HomePage {
   private searchTerm = '';
 
   private enableNamePeek = false;
+  private loading: boolean = true;
 
   constructor(public navCtrl: NavController, private pipe: ChallengesPipe, private keyboard: Keyboard, public fb: Facebook, 
               public storage: Storage, public db: DatabaseProvider, public alertCtrl: AlertController, private zone: NgZone,
@@ -184,6 +185,8 @@ export class HomePage {
     this.storage.get('user').then((value) => {
       let userId = JSON.parse(value).id;
       this.db.getChallenges(userId).map(res => res.json()).subscribe(response => {
+      this.loading = false;
+
           this.myChallenges = Object.keys(response).map((key) => { return response[key]; });
       },
       error => {

@@ -19,6 +19,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 
 import { Facebook } from '@ionic-native/facebook';
 import { Camera } from '@ionic-native/camera';
+import { MediaCapture } from '@ionic-native/media-capture';
 import { Transfer, TransferObject } from '@ionic-native/transfer';
 
 import { IonicStorageModule } from '@ionic/storage';
@@ -83,6 +84,7 @@ import { NgSwitch, NgSwitchCase } from '@angular/common';
     DatabaseProvider,
     ChallengesPipe,
     Camera,
+    MediaCapture,
     Transfer,
     Keyboard,
     NgSwitch,

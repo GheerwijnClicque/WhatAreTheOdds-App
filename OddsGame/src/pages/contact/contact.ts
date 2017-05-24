@@ -22,8 +22,9 @@ export class ContactPage {
   pieChart: any;
   statistics: any = [];
   achievements: any = [];
-
   selectedSegment: string = "statistics";
+
+  loading: boolean = true;
 
 
   constructor(public navCtrl: NavController, private storage: Storage, private fb: Facebook, private db: DatabaseProvider, private modalCtrl: ModalController, 
@@ -70,7 +71,7 @@ export class ContactPage {
       options: {
         responsive: true,
         legend: {
-          display: true,
+          display: false,
           position: 'bottom',
           labels: {fontColor:"white", fontSize: 11}
         },
@@ -85,7 +86,7 @@ export class ContactPage {
             ctx = chart.chart.ctx;
 
         ctx.restore();
-        var fontSize = (height / 190).toFixed(2);
+        var fontSize = (height / 195).toFixed(2);
         ctx.font = fontSize + "em sans-serif";
         ctx.textBaseline = "middle";
         ctx.fillStyle = '#fff';
@@ -94,7 +95,7 @@ export class ContactPage {
         console.log(score);
         var text = "score: " + score,
             textX = Math.round((width - ctx.measureText(text).width) / 2),
-            textY = (height / 2) - 10;
+            textY = (height / 2);
 
         ctx.fillText(text, textX, textY);
         ctx.save();
@@ -151,15 +152,19 @@ export class ContactPage {
   selectSegment() {
     switch(this.selectedSegment) {
       case 'achievements':
+          this.loading = true;
           this.getAchievements();
           break;
       case 'statistics':
+        this.loading = true;
             this.db.getStatistics(this.user_id).map(res => res.json()).subscribe(response => {
           //  this.statistics['completed_challenges'] = response['completed_challenges'];
           //  this.statistics['failed_challenges'] = response['failed_challenges'];
           //  this.statistics['declined_challenges'] = response['declined_challenges'];
             this.statistics = response;
+            console.log(this.statistics);
             this.renderChart();
+            this.loading = false;
           },
           error => {
             console.log(error);
@@ -176,6 +181,7 @@ export class ContactPage {
     this.db.getAchievements(this.user_id).map(res => res.json()).subscribe(response => {
         this.achievements = response;
         console.log(response);
+        this.loading = false;
       },
       error => {
         console.log(error);

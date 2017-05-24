@@ -1,4 +1,4 @@
-import { Component, NgZone } from '@angular/core';
+import { Component, NgZone, ViewChild } from '@angular/core';
 import { NavController, ModalController, NavParams, ActionSheetController, ToastController } from 'ionic-angular';
 
 import { Storage } from '@ionic/storage';
@@ -9,6 +9,7 @@ import { ChallengeRange } from '../challenge-range/challenge-range';
 import { DatabaseProvider } from '../../providers/database-provider';
 
 import { Camera, CameraOptions } from '@ionic-native/camera';
+import { MediaCapture } from '@ionic-native/media-capture';
 
 import * as io from 'socket.io-client';
 
@@ -26,6 +27,7 @@ const FILESERVERURL = server.FILESERVERURL;
   templateUrl: 'challenge-detail.html'
 })
 export class ChallengeDetail {
+  @ViewChild('myvideo') myVideo: any;
   challenge: any;
   private user_id: any = 0;
   private guess: number = 1;
@@ -36,7 +38,7 @@ export class ChallengeDetail {
 
   constructor(public navCtrl: NavController, public storage: Storage, private modalCtrl: ModalController, private fb: Facebook,
               private zone: NgZone, private navParams: NavParams, private db: DatabaseProvider, private actionSheetCtrl: ActionSheetController,
-              private camera: Camera, private sanitizer: DomSanitizer, private transfer: Transfer, private toastCtrl: ToastController) {
+              private camera: Camera, private sanitizer: DomSanitizer, private transfer: Transfer, private toastCtrl: ToastController, private mediaCapture: MediaCapture) {
     this.challenge = this.navParams.get('challenge');
     this.equalsGuesses();
     this.serverInfo = server;
@@ -247,13 +249,11 @@ export class ChallengeDetail {
       fileName: this.challenge.challenge_id + '.jpeg',
       chunkedMode: false,
       mimeType: "multipart/form-data",
-
       //params : {'fileName': filename}
+    }
 
-  }
 
-
-    fileTransfer.upload(this.imageUrl, 'http://' + URL + ':8888/Web&MobileDev/Project/Server/fileserver.php', options)
+    fileTransfer.upload(this.imageUrl, 'http://gheerwijnclicque.ikdoeict.be/fileserver.php', options)
         .then((data) => {
           // success
             this.db.uploadImageURL(this.user_id, options.fileName, this.challenge.challenge_id).subscribe(data => {
@@ -291,4 +291,24 @@ export class ChallengeDetail {
       () => console.log("Finished"));
   }
 
+
+  recordVideo() {
+    this.mediaCapture.captureVideo((videodata) => {
+      alert(JSON.stringify(videodata));
+    });
+  }
+
+  selectVideo() {
+    let video = this.myVideo.nativeElement;
+    var options = {
+      sourceType: 2,
+      mediaType: 1
+    }
+    this.camera.getPicture(options).then((data) => {
+      video.src = data;
+      video.play();
+    }).catch((error) => {
+      console.log(error);
+    });
+  }
 }

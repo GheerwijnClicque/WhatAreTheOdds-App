@@ -41,7 +41,6 @@ export class MyApp {
 
         keyboard.disableScroll(true);
 
-
       //storage.set('test', 'BOOOOOOEM!');
       //storage.remove('test');
 

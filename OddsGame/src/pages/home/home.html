@@ -19,7 +19,17 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content>
+<div text-center style="padding-top: 5px" *ngIf="loading">
+    <ion-spinner name="ios"></ion-spinner>
+</div>
+
+<ion-content >
+    <div text-center style="padding-top: 5px" *ngIf="loading">
+        <ion-spinner name="ios"></ion-spinner>
+    </div>
+    <div *ngIf="!loading">
+
+    </div>
     <ion-refresher (ionRefresh)="doRefresh($event)" >
         <ion-refresher-content pullingText="Pull to refresh"
                                refreshingSpinner="circles"

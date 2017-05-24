@@ -25,15 +25,24 @@
 <ion-content>
         <div [ngSwitch]="selectedSegment">
             <div *ngSwitchCase="'statistics'">
-                 <div style="width: 95%; margin: 0 auto; padding-top: 40px;">
+                <div text-center style="padding-top: 5px" *ngIf="loading">
+                    <ion-spinner name="ios"></ion-spinner>
+                </div>
+                <div style="width: 95%; margin: 0 auto; padding-top: 20px;">
                     <canvas #pieChartCanvas></canvas>
                 </div>
-                <ion-list no-lines>
+                <ion-list no-lines *ngIf="!loading">
                     <ion-item>
-                        <span>Best score: </span> <span item-right>over 9000</span>
+                        <span><strong>Total challenges: </strong></span> <span item-right><strong>{{statistics.completed_challenges + statistics.failed_challenges}}</strong></span>
                     </ion-item>
-                     <ion-item>
-                        <span>Total challenges: </span> <span item-right>{{statistics}}</span>
+                    <ion-item>
+                        <span>Completed challenges: </span> <span class="completed-challenges" item-right>{{statistics.completed_challenges}}</span>
+                    </ion-item>
+                    <ion-item>
+                        <span>Failed challenges: </span> <span class="failed-challenges" item-right>{{statistics.failed_challenges}}</span>
+                    </ion-item>
+                    <ion-item>
+                        <span>Declined challenges: </span> <span class="declined-challenges" item-right>{{statistics.declined_challenges}}</span>
                     </ion-item>
                 </ion-list>
             </div>
@@ -49,7 +58,13 @@
                     </ion-item>
                 </ion-list>
             </div>
-            <div *ngSwitchCase="'settings'">
+            <div *ngSwitchCase="'settings'" text-center>
+                <div>
+                    <ion-avatar item-left>
+                        <img [src]="picture" *ngIf="picture" />
+                    </ion-avatar>
+                    <h3>{{user_name}}</h3>
+                </div>
                 <button ion-button color="danger" class="button-red button-red-block" (click)="logout()">Logout</button>
             </div>
         </div>

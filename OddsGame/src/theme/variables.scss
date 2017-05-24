@@ -41,6 +41,7 @@ $colors: (
     green:      #79f2a9,
     darkgreen:  #5eb57e,
     red:        #F25F5C,
+    yellow:    #FCF6B1,
     facebook: #3b5998,
   ),
   white: #fff,
@@ -81,7 +82,8 @@ $toolbar-md-button-color: color($colors, app, contrast);
 $button-ios-text-color: color($colors, app, green);
 $button-ios-background-color-activated: color($colors, app, dark);
 
-
+//Spinner 
+$spinner-ios-ios-color: color($colors, app, green);
 
 
 

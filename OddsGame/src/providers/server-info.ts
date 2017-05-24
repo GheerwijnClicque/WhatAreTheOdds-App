@@ -1,4 +1,5 @@
 export var server = {
-    URL: '192.168.1.147',
-    FILESERVERURL: 'http://192.168.1.147:8888/Web&MobileDev/Project/Server/uploads',
+    URL: '188.226.140.215',
+    FILESERVERURL: 'http://gheerwijnclicque.ikdoeict.be//uploads',
 };
+//http://188.226.140.215:3000/

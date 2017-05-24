@@ -3,10 +3,10 @@ page-contact {
 }
 
 ion-avatar img {
-  margin-top: 5%;
-  width: 20% !important;
-  height: 20% !important;
-  border-radius: 50%;
+  margin-top: 25%;
+  width: 30% !important;
+  height: 30% !important;
+  border-radius: 60%;
   margin-left: auto;
   margin-right: auto;
 }
@@ -38,3 +38,14 @@ ion-avatar img {
   //background-color: color($colors, app, dark);
 }
 
+.completed-challenges {
+    color: color($colors, app, green);
+}
+
+.failed-challenges {
+    color: color($colors, app, red);
+}
+
+.declined-challenges {
+    color: color($colors, app, yellow);
+}
