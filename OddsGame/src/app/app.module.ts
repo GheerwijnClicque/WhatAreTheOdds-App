@@ -34,6 +34,7 @@ import { HttpModule } from '@angular/http';
 import { Keyboard } from '@ionic-native/keyboard';
 import { NgSwitch, NgSwitchCase } from '@angular/common';
 
+import { UUID } from 'angular2-uuid';
 
 @NgModule({
   declarations: [

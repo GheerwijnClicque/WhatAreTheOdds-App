@@ -9,7 +9,7 @@ import { ChallengeRange } from '../challenge-range/challenge-range';
 import { DatabaseProvider } from '../../providers/database-provider';
 
 import { Camera, CameraOptions } from '@ionic-native/camera';
-import { MediaCapture } from '@ionic-native/media-capture';
+import { MediaCapture, CaptureVideoOptions } from '@ionic-native/media-capture';
 
 import * as io from 'socket.io-client';
 
@@ -18,6 +18,8 @@ import { DomSanitizer } from '@angular/platform-browser'; // prevent XSS and suc
 import { Transfer, FileUploadOptions, TransferObject } from '@ionic-native/transfer';
 
 import { server } from '../../providers/server-info';
+
+import { UUID } from 'angular2-uuid';
 
 const URL = server.URL;
 const FILESERVERURL = server.FILESERVERURL;
@@ -34,6 +36,10 @@ export class ChallengeDetail {
   private serverInfo: any;
   private socket: any;
   private imageUrl: string = '';
+  private videoData: any = '';
+
+  private mediaSelected = false;
+  private mediaFile: any;
 
 
   constructor(public navCtrl: NavController, public storage: Storage, private modalCtrl: ModalController, private fb: Facebook,
@@ -42,8 +48,7 @@ export class ChallengeDetail {
     this.challenge = this.navParams.get('challenge');
     this.equalsGuesses();
     this.serverInfo = server;
-        console.log('serverInfo');
-
+    console.log('serverInfo');
     console.log(this.serverInfo);
   }
 
@@ -164,20 +169,28 @@ export class ChallengeDetail {
   /////// ///////
 
    presentActionSheet() {
-
     let actionSheet = this.actionSheetCtrl.create({
       title: 'Select Image Source',
       buttons: [
         {
-          text: 'Load from Library',
+          text: 'Take a picture',
           handler: () => {
-            //this.takePicture(Camera.PictureSourceType.PHOTOLIBRARY);
+            //this.takePicture(Camera.PictureSourceType.CAMERA);
+            this.takePicture();
           }
         },
         {
-          text: 'Use Camera',
+          text: 'Record a video',
           handler: () => {
             //this.takePicture(Camera.PictureSourceType.CAMERA);
+            this.recordVideo();
+          }
+        },
+        {
+          text: 'Select photo from Library',
+          handler: () => {
+            //this.takePicture(Camera.PictureSourceType.PHOTOLIBRARY);
+            this.selectFromLibrary();
           }
         },
         {
@@ -193,7 +206,7 @@ export class ChallengeDetail {
     quality: 100,
     destinationType: this.camera.DestinationType.DATA_URL,
     encodingType: this.camera.EncodingType.JPEG,
-    mediaType: this.camera.MediaType.PICTURE,
+    mediaType: this.camera.MediaType.ALLMEDIA,
     sourceType: this.camera.PictureSourceType.CAMERA,
     saveToPhotoAlbum: false,
     allowEdit: false,
@@ -206,8 +219,13 @@ export class ChallengeDetail {
       // imageData is either a base64 encoded string or a file URI
       // If it's base64:
       let base64Image = 'data:image/jpeg;base64,' + imageData;
+
+      this.mediaFile = base64Image;
+
       this.zone.run(() => {
         this.imageUrl = base64Image;
+        this.mediaSelected = true;
+
       });
     }, (error) => {
       // Handle error
@@ -218,15 +236,19 @@ export class ChallengeDetail {
   selectFromLibrary() {
     let options = {
       destinationType: this.camera.DestinationType.DATA_URL,
-      sourceType: this.camera.PictureSourceType.PHOTOLIBRARY,
+      sourceType: this.camera.PictureSourceType.SAVEDPHOTOALBUM,
       targetWidth: 500,
       targetHeight: 500
     };
 
     this.camera.getPicture(options).then((imageData) => {
       let base64Image = 'data:image/jpeg;base64,' + imageData;
+
+      this.mediaFile = base64Image;
+
       this.zone.run(() => {
         this.imageUrl = base64Image;
+        this.mediaSelected = true;
       });
     }, (error) => {
 
@@ -235,6 +257,7 @@ export class ChallengeDetail {
 
   removeImage() {
     this.imageUrl = '';
+    this.mediaSelected = false;
   }
 
   error: any;
@@ -292,23 +315,107 @@ export class ChallengeDetail {
   }
 
 
-  recordVideo() {
+
+ /* recordVideo() {
     this.mediaCapture.captureVideo((videodata) => {
       alert(JSON.stringify(videodata));
     });
+  } */
+
+
+ private opts: CaptureVideoOptions = {duration: 5};
+ private showVideoPreview = false;
+
+  recordVideo() {
+    var that = this;
+    this.showVideoPreview = true;
+
+    this.mediaCapture.captureVideo(this.opts).then((data) => {
+      let video = that.myVideo.nativeElement;
+
+      this.videoData = data[0]['localURL'];
+      this.mediaFile = data[0]['localURL'];
+      //alert(JSON.stringify(data[0]));
+      //alert(this.videoData);
+
+      video.src = data[0]['fullPath'];
+      
+      this.mediaSelected = true;
+    }).catch((error) => {
+      alert('error: ' + error);
+      this.showVideoPreview = false;
+
+    });
   }
 
-  selectVideo() {
+/*selectVideo() {
     let video = this.myVideo.nativeElement;
     var options = {
       sourceType: 2,
-      mediaType: 1
+      mediaType: 1,
     }
     this.camera.getPicture(options).then((data) => {
+      alert(data);
+      this.videoData = data;
       video.src = data;
       video.play();
     }).catch((error) => {
       console.log(error);
     });
+  }  */
+
+
+
+
+  errorVideo: any;
+  uploadSucceededVideo: boolean = false;
+  uploadVideo() {
+    //this.db.uploadImage(this.user_id, this.imageUrl);
+    const fileTransfer: TransferObject = this.transfer.create();
+    var video = JSON.stringify(this.videoData);
+    alert('video: ' + this.videoData);
+
+    let uuid = UUID.UUID();
+   // var filename = 'testing.png';
+    let options: FileUploadOptions = {
+      fileKey: "file",
+      fileName: uuid + '.mp4',
+      chunkedMode: false,
+      mimeType: "multipart/form-data",
+      //mimeType: "video/mp4"
+      //params : {'fileName': filename}
+    }
+
+    //fullPath or localURL
+    fileTransfer.upload(this.videoData, 'http://192.168.1.148:8888/Web&MobileDev/Project/Server//fileserver.php', options)
+        .then((data) => {
+          // success
+            alert('data: ' + data);
+
+           /* this.db.uploadImageURL(this.user_id, options.fileName, this.challenge.challenge_id).subscribe(data => {
+              //this.challenge.image_url = options.fileName;
+              this.uploadSucceededVideo = true;
+            },
+            error => {
+              alert('error: ' + error);
+            },
+            () => console.log("Finished")); */
+        }, (err) => {
+          // error
+          this.errorVideo = JSON.stringify(err);
+        });
   }
+
+
+  universalUpload() {
+    var data = this.mediaFile;
+
+    alert(data);
+
+    
+
+
+  }
+
+
 }

@@ -11,7 +11,7 @@
         <!-- <ion-list-header>Follow us on Twitter</ion-list-header> -->
 
         <!--{{myTurn()}}-->
-        <div *ngIf="!imageUrl && !hasImage()">
+        <div *ngIf="!imageUrl && !hasImage() && !mediaSelected">
             <div  style=" margin-top: 10%; padding: 5%;">
                 <h1 color="contrast">"{{challenge.challenge}}"</h1>
             </div>
@@ -28,24 +28,27 @@
                 <p>Waiting for proof of completion</p>
             </div>
             <div *ngIf="!isChallenger() && !hasImage()" >
-                <div *ngIf="!imageUrl">
+                <div *ngIf="(!imageUrl || !videoData) && !mediaSelected && !showVideoPreview">
                     <div style="margin-top: 20px;">
                         <h4>You guessed the same!</h4>
                         <p>Upload a picture to show you completed the challenge!</p>
                     </div>
                     <div class="div-bottom">
-                        <button ion-button color="danger" class="button-red" (click)="recordVideo()">Record Video</button>
+                      <!--  <button ion-button color="danger" class="button-red" (click)="recordVideo()">Record Video</button>
                         <button ion-button color="danger" class="button-red" (click)="selectVideo()">Select Video</button>
+                        <button ion-button color="danger" class="button-red" (click)="uploadVideo()">Upload Video</button> -->
+                        <button ion-button color="danger" class="button-green" (click)="presentActionSheet()">Prove completion</button>
 
-                        <button ion-button color="secondary" class="button-green" (click)="takePicture()">Take Image</button>
-                        <button ion-button color="secondary" class="button-green" (click)="selectFromLibrary()">Select Image</button>
+
+                       <!-- <button ion-button color="secondary" class="button-green" (click)="takePicture()">Take Image</button>
+                        <button ion-button color="secondary" class="button-green" (click)="selectFromLibrary()">Select Image</button> -->
                     </div>
                 </div>
                 <ion-card style="width: 80%; margin: 0 auto;">
-                    <img [src]="sanitizer.bypassSecurityTrustUrl(imageUrl)" *ngIf="imageUrl" />
-                    <video #myvideo></video>
+                    <img [src]="sanitizer.bypassSecurityTrustUrl(imageUrl)" *ngIf="mediaSelected" />
+                    <video #myvideo width="300px" height="300px" *ngIf="showVideoPreview" controls="controls"></video>
                 </ion-card>
-                <div *ngIf="imageUrl" class="div-bottom">
+                <div *ngIf="(imageUrl || showVideoPreview) && mediaFile" class="div-bottom">
                     <button ion-button color="danger" class="button-red" *ngIf="imageUrl" (click)="upload()">Send</button>
                     <button ion-button color="danger" class="button-red" *ngIf="imageUrl" (click)="removeImage()">Remove</button>
                 </div>
