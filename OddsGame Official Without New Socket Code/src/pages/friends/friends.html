@@ -1,0 +1,16 @@
+<ion-header>
+  <ion-navbar>
+    <ion-searchbar (ionInput)="search($event)" [showCancelButton]="true" placeholder="Search by username"></ion-searchbar>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-item-divider>Friends</ion-item-divider>
+  <ion-item *ngFor="let f of users | searchByName: searchTerm" no-lines>
+    {{f.name}} <button ion-button color="secondary" (click)="challengeFriend(f)" item-right class="button-green">Challenge</button>
+  </ion-item>
+<!--  <ion-item-divider>People you know</ion-item-divider>
+  <ion-item *ngFor="let f of friends">
+    {{f.name}} <button ion-button (click)="addAsFriend(f)">Add Friend</button> 
+  </ion-item> -->
+</ion-content>

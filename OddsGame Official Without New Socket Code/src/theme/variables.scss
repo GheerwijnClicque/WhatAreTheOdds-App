@@ -1,0 +1,161 @@
+// Ionic Variables and Theming. For more info, please see:
+// http://ionicframework.com/docs/v2/theming/
+$font-path: "../assets/fonts";
+
+@import "ionic.globals";
+
+
+// Shared Variables
+// --------------------------------------------------
+// To customize the look and feel of this app, you can override
+// the Sass variables found in Ionic's source scss files.
+// To view all the possible Ionic variables, see:
+// http://ionicframework.com/docs/v2/theming/overriding-ionic-variables/
+
+
+
+
+// Named Color Variables
+// --------------------------------------------------
+// Named colors makes it easy to reuse colors on various components.
+// It's highly recommended to change the default colors
+// to match your app's branding. Ionic uses a Sass map of
+// colors so you can add, rename and remove colors as needed.
+// The "primary" color is the only required color in the map.
+
+// https://coolors.co/424d58-79f2a9-f25f5c-41d3bd-247ba0
+
+$colors: (
+  primary:    #387ef5,
+  secondary:  #32db64,
+  danger:     #f53d3d,
+  light:      #f4f4f4,
+  dark:       #222,
+  app: (
+    base:       #424D58,
+    base-inactive: #6e7f91,
+    dark:       #2A3540,
+    light:       #a7bbd1,
+    inactive:   #51BA84,
+    contrast:   #fff,
+    green:      #79f2a9,
+    darkgreen:  #5eb57e,
+    red:        #F25F5C,
+    yellow:    #FCF6B1,
+    facebook: #3b5998,
+  ),
+  white: #fff,
+  green:      #79f2a9,
+
+);
+
+$toolbar-ios-title-text-color: color($colors, app, contrast);
+$toolbar-ios-title-text-align: center;
+
+// Refresher
+$refresher-text-color: color($colors, app, contrast);
+$refresher-icon-color: color($colors, app, contrast);
+
+// Tabs
+$tabs-background: color($colors, app, base);
+$tabs-ios-tab-color-active: color($colors, app, green);
+$tabs-ios-tab-color-inactive: color($colors, app, contrast);
+
+// Items
+$item-ios-detail-push-color: color($colors, app, green);
+$item-ios-divider-color: color($colors, app, contrast);
+//$item-ios-divider-background: color($colors, app, base);
+//$item-ios-sliding-content-background: color($colors, app, base);
+$item-ios-divider-background: color($colors, app, dark);
+$item-ios-divider-color: color($colors, app, contrast);
+//$item-md-divider-background: color($colors, app, green);
+
+
+$list-ios-background-color: color($colors, app, base);
+$list-ios-text-color: color($colors, app, contrast);
+//$list-ios-border-color: color($colors, app, contrast);
+
+$toolbar-md-button-color: color($colors, app, contrast);
+
+
+// Button
+$button-ios-text-color: color($colors, app, green);
+$button-ios-background-color-activated: color($colors, app, dark);
+
+//Spinner 
+$spinner-ios-ios-color: color($colors, app, green);
+
+//Badges
+$badge-ios-background-color: color($colors, app, contrast);
+$badge-ios-text-color: color($colors, app, dark);
+
+
+
+// App iOS Variables
+// --------------------------------------------------
+// iOS only Sass variables can go here
+
+//Action sheet
+//$action-sheet-ios-background: color($colors, app, base);
+$background-ios-color: color($colors, app, base);
+$action-sheet-ios-button-destructive-text-color: color($colors, app, red);
+$action-sheet-ios-border-radius: 6px;
+//$action-sheet-ios-button-cancel-background: color($colors, app, base);
+//$action-sheet-ios-title-color: color($colors, app, contrast);
+$action-sheet-ios-button-text-color: color($colors, app, base);
+
+//Searchbar
+$searchbar-ios-input-search-icon-color: color($colors, app, contrast);
+$searchbar-ios-input-text-color: color($colors, app, contrast);
+$searchbar-ios-input-clear-icon-color: color($colors, app, contrast);
+
+//Badges
+$badge-ios-background-color: color($colors, app, contrast);
+$badge-ios-text-color: color($colors, app, dark);
+
+//Toasts
+$toast-ios-background: color($colors, app, dark);
+$toast-ios-title-color: color($colors, app, contrast);
+$toast-ios-border-radius: 3px;
+
+//Segment
+$segment-button-ios-background-color-activated: color($colors, app, green);
+$segment-button-ios-text-color: color($colors, app, base);
+
+// App Material Design Variables
+// --------------------------------------------------
+// Material Design only Sass variables can go here
+
+
+
+
+// App Windows Variables
+// --------------------------------------------------
+// Windows only Sass variables can go here
+
+
+
+
+// App Theme
+// --------------------------------------------------
+// Ionic apps can have different themes applied, which can
+// then be future customized. This import comes last
+// so that the above variables are used and Ionic's
+// default are overridden.
+
+@import "ionic.theme.default";
+
+
+// Ionicons
+// --------------------------------------------------
+// The premium icon font for Ionic. For more info, please see:
+// http://ionicframework.com/docs/v2/ionicons/
+
+@import "ionic.ionicons";
+
+
+// Fonts
+// --------------------------------------------------
+
+@import "roboto";
+@import "noto-sans";

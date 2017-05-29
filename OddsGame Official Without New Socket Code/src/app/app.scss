@@ -1,0 +1,138 @@
+// http://ionicframework.com/docs/v2/theming/
+
+
+// App Global Sass
+// --------------------------------------------------
+// Put style rules here that you want to apply globally. These
+// styles are for the entire app and not just one component.
+// Additionally, this file can be also used as an entry point
+// to import other Sass files to be included in the output CSS.
+//
+// Shared Sass variables, which can be used to adjust Ionic's
+// default Sass variables, belong in "theme/variables.scss".
+//
+// To declare rules for a specific mode, create a child rule
+// for the .md, .ios, or .wp mode classes. The mode class is
+// automatically applied to the <body> element in the app.
+
+  .alert-ios .alert-input{
+        color: color($colors, app, base);
+    } 
+    
+.item-disabled {
+  pointer-events: none;
+  color: lightgrey;
+  text-decoration: line-through;
+}
+
+
+.toolbar-background {
+  background: color($colors, app, base);
+}
+
+ion-title {
+  color: color($colors, app, contrast);
+}
+
+body {
+  font-family: 'Helvetica Neue';
+  color: color($colors, app, contrast);
+}
+
+ion-navbar {
+
+}
+
+.button-green {
+  color: color($colors, app, dark);
+  background-color: color($colors, app, green);
+  font-size: 15px;
+  /*width: 35%;*/
+}
+
+.button-white {
+  color: color($colors, app, dark);
+  background-color: color($colors, app, contrast);
+}
+
+.button-red {
+  color: color($colors, app, dark);
+  background-color: color($colors, app, red);
+  font-size: 15px;
+  width: 35%;
+}
+
+.button-red-block{
+  color: color($colors, app, dark);
+  background-color: color($colors, app, red);
+  font-size: 15px;
+  width: 100%;
+}
+
+.button-yellow {
+  color: color($colors, app, dark);
+  background-color: color($colors, app, yellow);
+  font-size: 15px;
+  width: 35%;
+}
+
+.text-green {
+  color: color($colors, app, green);
+}
+
+.text-white {
+  color: color($colors, app, contrast);
+}
+
+h1, h2, h3, h4, h5 {
+  color: color($colors, app, contrast);
+}
+
+.div-bottom{
+  position: absolute;
+  margin-bottom: 5%;
+  width: 100%;
+}
+
+.no-scroll .scroll-content{
+  overflow: hidden;
+
+}
+
+.static-wrapper{
+  width: 100%;
+  min-height: 100%;
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.no-header {
+  height: 80px;
+  margin-top: 25%;
+}
+
+.back-button {
+  color: color($colors, app, contrast);
+}
+
+.achievement-toast {
+}
+
+.segment-button {
+  color: white;
+}
+
+.segment-button .segment-button-activated {
+  background-color: color($colors, app, green) !important;
+  color: color($colors, app, base) !important;
+}
+
+ion-card img{
+  margin-top: 20px;
+}
+
+.thin-button {
+  width: 35%;
+}

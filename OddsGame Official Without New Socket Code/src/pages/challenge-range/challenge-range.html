@@ -1,0 +1,32 @@
+
+
+<ion-content padding>
+  <div class="static-wrapper" ion-fixed text-center>
+    <div class="no-header">
+      <h2 >What are the odds?</h2>
+    </div>
+
+  <div padding class="ranges">
+   <!-- <ion-grid>
+      <ion-row text-center>
+        <ion-col>I'm a column</ion-col>
+        <ion-col>Another column</ion-col>
+      </ion-row>
+    </ion-grid> -->
+    <div style="width: 50%; margin: 0 auto;">
+      <span *ngFor="let g of guesses" >
+        <button tappable class="round-button button-white" ion-button [ngClass]="{'selected': g === guess}" (tap)="selectGuess(g)">{{g}}</button>
+      </span>
+    </div>
+
+
+  </div>
+
+
+    <div class="div-bottom">
+      <button ion-button color="secondary" (click)="submit()" class="button-green">Submit</button>
+      <button ion-button color="danger" (click)="cancel()" class="button-red">Cancel</button>
+    </div>
+
+  </div>
+</ion-content>

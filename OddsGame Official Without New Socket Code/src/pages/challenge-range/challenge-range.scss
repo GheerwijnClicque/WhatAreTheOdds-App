@@ -1,0 +1,22 @@
+page-home {
+
+}
+
+.ranges {
+  width: 100%;
+}
+
+.round-button {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+}
+
+.round-button:active {
+  background-color: color($colors, app, green);
+}
+
+
+.round-button.selected {
+  background-color: color($colors, app, green);
+}

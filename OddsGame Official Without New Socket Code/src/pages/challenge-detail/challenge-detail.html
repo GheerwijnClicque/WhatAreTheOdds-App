@@ -1,0 +1,113 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      Challenge
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+    <div class="static-wrapper" ion-fixed text-center>
+        <!-- <ion-list-header>Follow us on Twitter</ion-list-header> -->
+
+        <!--{{myTurn()}}-->
+        <div *ngIf="!imageUrl && !hasImage() && !mediaSelected">
+            <div  style=" margin-top: 10%; padding: 5%;">
+                <h1 color="contrast">"{{challenge.challenge}}"</h1>
+            </div>
+            <div *ngIf="(isAccepted() || isChallenger()) && (!imageUrl && !hasImage()) && !guessesMade()" style="margin-top: 10px;">  <!--|| challenge.challenger_id === user.id (or just make it an entry without detail? -->
+                <h4>The odds are <h1>{{challenge.range}}</h1></h4>
+            </div>
+        </div>
+
+
+
+        <div *ngIf="equalsGuesses() && guessesMade()">
+            <div *ngIf="isChallenger() && !hasImage()">
+                <h4>You guessed the same!</h4>
+                <p>Waiting for proof of completion</p>
+            </div>
+            <div *ngIf="!isChallenger() && !hasImage()" >
+                <div *ngIf="(!imageUrl || !videoData) && !mediaSelected && !showVideoPreview">
+                    <div style="margin-top: 20px;">
+                        <h4>You guessed the same!</h4>
+                        <p>Upload a picture to show you completed the challenge!</p>
+                    </div>
+                    <div class="div-bottom">
+                      <!--  <button ion-button color="danger" class="button-red" (click)="recordVideo()">Record Video</button>
+                        <button ion-button color="danger" class="button-red" (click)="selectVideo()">Select Video</button>
+                        <button ion-button color="danger" class="button-red" (click)="uploadVideo()">Upload Video</button> -->
+                        <button ion-button color="secondary" class="button-green" (click)="presentActionSheet()">Prove completion</button>
+                    </div>
+                </div>
+
+                <div style="padding: 10px;">
+                    <img [src]="sanitizer.bypassSecurityTrustUrl(mediaFile)" width="auto" height="310px" *ngIf="mediaSelected && !showVideoPreview" /> 
+                    <video #myvideo width="100%" height="310px" *ngIf="showVideoPreview" controls="controls"></video>
+                </div> 
+
+                <div *ngIf="(imageUrl || showVideoPreview) && mediaFile" class="div-bottom">
+                    <button ion-button color="danger" class="button-yellow" *ngIf="mediaFile" (click)="universalUpload()">Send</button>
+                    <button ion-button color="danger" class="button-red" *ngIf="mediaFile" (click)="removeImage()">Remove</button>
+                </div>
+            </div>
+
+            <div *ngIf="hasImage() && !isCompleted()">
+                <!-- <p color="contrast">"{{challenge.challenge}}"</p> -->
+               <!-- <ion-card style="width: 80%; margin: 0 auto;">
+                    <img src="{{serverInfo.FILESERVERURL}}/{{challenge.media_file}}"/>
+                </ion-card> -->
+                 <div *ngIf="!mediaIsVideo()" style="padding: 10px;">  
+                    <p>Did {{challenge.challengee_name}} complete this challenge?</p>   <!-- Was this challenge completed? -->    
+                    <img width="auto" height="310px" src="{{serverInfo.FILESERVERURL}}/{{challenge.media_file}}"/>
+                </div>
+
+                <div *ngIf="mediaIsVideo()" style="padding: 10px;">
+                    <p>Did {{challenge.challengee_name}} complete this challenge?</p>       
+                    <video width="100%" height="310px" preload="auto" controls="controls">
+                        <source src="{{serverInfo.FILESERVERURL}}/{{challenge.media_file}}" type="video/mp4">
+                    </video>
+                </div>
+
+                <div *ngIf="isChallenger()" class="div-bottom">
+                    <button ion-button color="secondary" class="button-green thin-button" (click)="judgeChallenge(true)">  <ion-icon name="thumbs-up"></ion-icon>
+</button>
+                    <button ion-button color="danger" class="button-red" (click)="judgeChallenge(false)">  <ion-icon name="thumbs-down"></ion-icon>
+</button>
+                </div>
+        
+            </div>
+        </div>
+
+        <div *ngIf="!equalsGuesses() && !guessesMade()">
+            <div *ngIf="!isAccepted() && !isChallenger()" class="div-bottom">
+                <button ion-button color="secondary" (click)="accept(challenge)" class="button-green thin-button" >Accept</button> <!-- style="float: left; margin-left: 30px;"-->
+                <button ion-button color="danger" (click)="decline(challenge)" class="button-red thin-button" >Decline</button> <!-- style="float: right; margin-right: 30px;" -->
+            </div>
+            <div *ngIf="isAccepted() && myTurn()">
+
+                <ion-range min="1" max="{{challenge.range}}" [(ngModel)]="guess" color="secondary">
+                    <ion-label class="text-white" style="font-size: 20px" range-left>0</ion-label>
+                    <ion-label class="text-white" style="font-size: 20px" range-right>{{guess}}</ion-label>
+                </ion-range>
+
+                <div class="div-bottom">
+                    <button ion-button color="secondary" class="button-green" (click)="submitGuess()">Guess</button>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="!equalsGuesses() && guessesMade()">
+            <p>Guesses were wrong! bye</p>
+            <p>Start a new challenge</p>
+            <button ion-button color="secondary" (click)="challenge(challenge)" class="button-green" >Challenge</button> <!-- style="float: left; margin-left: 30px;"-->
+        </div>
+    </div>
+</ion-content>
+<!--
+<ion-footer text-center>
+    <div *ngIf="!isAccepted() && !isChallenger() && !equalsGuesses() && !guessesMade()">
+        <button ion-button color="secondary" (click)="accept(challenge)" class="button-green">Accept</button>
+        <button ion-button color="danger" (click)="decline(challenge)" class="button-red">Decline</button>
+    </div>
+</ion-footer>
+-->

@@ -1,0 +1,72 @@
+<ion-header>
+<!--  <ion-navbar>
+    <ion-title>
+      {{user_name}}
+    </ion-title>
+  </ion-navbar> -->
+   <ion-toolbar>
+    <ion-segment [(ngModel)]="selectedSegment" (ionChange)="selectedTabChanged($event)">
+      <ion-segment-button value="statistics">
+        <!-- <ion-icon name="camera"></ion-icon> -->
+        Statistics
+      </ion-segment-button>
+      <ion-segment-button value="achievements">
+          <!-- <ion-icon name="camera"></ion-icon> -->
+          Achievements
+      </ion-segment-button>
+      <ion-segment-button value="settings">
+          <!-- <ion-icon name="camera"></ion-icon> -->
+          Settings
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+        <div [ngSwitch]="selectedSegment">
+            <div *ngSwitchCase="'statistics'">
+                <div text-center style="padding-top: 5px" *ngIf="loading">
+                    <ion-spinner name="ios"></ion-spinner>
+                </div>
+                <div style="width: 95%; margin: 0 auto; padding-top: 20px;">
+                    <canvas #pieChartCanvas></canvas>
+                </div>
+                <ion-list no-lines *ngIf="!loading">
+                    <ion-item>
+                        <span><strong>Total challenges: </strong></span> <span item-right><strong>{{statistics.completed_challenges + statistics.failed_challenges}}</strong></span>
+                    </ion-item>
+                    <ion-item>
+                        <span>Completed challenges: </span> <span class="completed-challenges" item-right>{{statistics.completed_challenges}}</span>
+                    </ion-item>
+                    <ion-item>
+                        <span>Failed challenges: </span> <span class="failed-challenges" item-right>{{statistics.failed_challenges}}</span>
+                    </ion-item>
+                    <ion-item>
+                        <span>Declined challenges: </span> <span class="declined-challenges" item-right>{{statistics.declined_challenges}}</span>
+                    </ion-item>
+                </ion-list>
+            </div>
+            <div *ngSwitchCase="'achievements'">
+                <ion-list>
+                    <ion-item *ngFor="let achievement of achievements" [ngClass]="achievement.achieved ? 'achieved' : 'not-achieved'">
+                        <div class="achievement-title">
+                           <ion-icon [name]="achievement.achieved ? 'star' : 'star-outline'"></ion-icon> <span>{{achievement.name}}</span> 
+                        </div>
+                        <div class="achievement-description">
+                            <span>{{achievement.rule}}</span>
+                        </div>
+                    </ion-item>
+                </ion-list>
+            </div>
+            <div *ngSwitchCase="'settings'" text-center>
+                <div>
+                    <ion-avatar item-left>
+                        <img [src]="picture" *ngIf="picture" />
+                    </ion-avatar>
+                    <h3>{{user_name}}</h3>
+                </div>
+                <button ion-button color="danger" class="button-red button-red-block" (click)="logout()">Logout</button>
+            </div>
+        </div>
+
+</ion-content>

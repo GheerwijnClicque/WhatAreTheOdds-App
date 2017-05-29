@@ -1,0 +1,69 @@
+page-home {
+
+}
+
+.item-lines {
+  border-bottom: solid color($colors, app, contrast) 1px;
+}
+
+.search-bar {
+  height: 30px;
+  margin-top: -10px;
+  color: color($colors, app, contrast) !important;
+}
+
+ion-icon {
+  color: color($colors, app, contrast);
+}
+
+.challenge-completed {
+  color: color($colors, app, green);
+}
+
+ion-icon[name="checkmark"] {
+  font-size: 35px;
+  margin: -5px 0px -5px 0px;
+  color: color($colors, app, green);
+}
+
+.challenge-failed {
+  color: color($colors, app, red);
+  text-decoration: line-through;
+}
+
+ion-icon[name="close"] {
+  font-size: 35px;
+  margin: -5px 0px -5px 0px;
+  color: color($colors, app, red);
+}
+
+.item-my-turn span{
+  color: color($colors, app, base-inactive);
+}
+
+@keyframes slideInBothWays {
+  0% {
+    transform: translate3d(-50%,0,0);
+  }
+  
+  50% {
+    transform: translate3d(10%,0,0);
+  }
+  
+  100% {
+    transform: translate3d(0,0,0);
+  }
+}
+  
+.slide-in-both-ways {
+  animation: slideInBothWays ease-in 1;
+  animation-duration: 650ms;
+}
+
+@keyframes fadeInOut {
+from { opacity: 0; }
+}
+
+.fade-in-out {
+  animation: fadeInOut ease-in 0.8s infinite alternate;
+}

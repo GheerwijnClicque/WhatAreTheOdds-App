@@ -1,0 +1,16 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      Highscores
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-list no-lines>
+    <ion-item *ngFor="let user of highscores; let i = index;">
+      <span>{{i + 1}}. {{user.name}}</span> <span item-right class="text-green">{{user.score}}</span>
+    </ion-item>
+  </ion-list>
+</ion-content>
+<!-- <button ion-button (click)="challengeUser(user)" item-right class="button-white">Challenge</button> -->
