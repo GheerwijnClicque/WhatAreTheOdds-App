@@ -47,7 +47,7 @@ setInterval(function() {
 	// Delete rejected entries if 24h have passed
     db.serialize(function() {
     	console.log('runnning query');
-        db.run("DELETE FROM challenges WHERE rejected = 1 OR completed = 1", {}, function(error, row) {
+        db.run("DELETE FROM challenges WHERE rejected = 1 OR completed = 1 OR completed = 0", {}, function(error, row) {
        // db.run("DELETE FROM challenges WHERE updated_at <= date('now', '-1 day') and rejected = 1", {}, function(error, row) {
             if(this.changes) {
                 console.log('deleted some things');
@@ -132,7 +132,7 @@ var getChallengeById = function(id, event) {
           console.log('Looking for challenge');
         db.serialize(function () {
             // Get process by id
-            db.all("SELECT challenges.challenge_id, challenges.challenger_id, challenges.challengee_id, challenges.challenge, challenges.created_at, challenges.updated_at, challenger.name as challenger_name, challengee.name as challengee_name, challenges.challengee_id, challenges.range, challenges.accepted, challenges.rejected, challenges.challenger_guess, challenges.challengee_guess, challenges.challenger_turn, challenges.image_url, challenges.completed from CHALLENGES INNER JOIN USERS AS challenger ON (challenges.challenger_id=challenger.facebook_id) INNER JOIN USERS as challengee ON (challenges.challengee_id=challengee.facebook_id) WHERE challenges.challenge_id = $id", {$id: id}, function (error, row) {
+            db.all("SELECT challenges.challenge_id, challenges.challenger_id, challenges.challengee_id, challenges.challenge, challenges.created_at, challenges.updated_at, challenger.name as challenger_name, challengee.name as challengee_name, challenges.challengee_id, challenges.range, challenges.accepted, challenges.rejected, challenges.challenger_guess, challenges.challengee_guess, challenges.challenger_turn, challenges.media_file, challenges.completed from CHALLENGES INNER JOIN USERS AS challenger ON (challenges.challenger_id=challenger.facebook_id) INNER JOIN USERS as challengee ON (challenges.challengee_id=challengee.facebook_id) WHERE challenges.challenge_id = $id", {$id: id}, function (error, row) {
                 //getRow = JSON.stringify(row);
 
                 if (row !== null) {
@@ -221,7 +221,7 @@ app.post('/challenge', function(req, res) {
     db.serialize(function() {
         db.each("SELECT COUNT(*) as count FROM challenges where challenger_id = $user and challengee_id = $friend and challenge = $challenge", {$user: challengerId, $friend: challengeeId, $challenge: challenge}, function(error, row) {
         	if(row.count === 0) {
-                db.run("INSERT INTO challenges(challenger_id, challengee_id, challenge, accepted, rejected, created_at, challenger_turn) VALUES ($user, $friend, $challenge, $accepted, $rejected, $created, 0)", {$user: challengerId, $friend: challengeeId, $challenge: challenge, $accepted: 0, $rejected: 0, $created: Math.floor(Date.now() / 1000)}, function() {
+                db.run("INSERT INTO challenges(challenger_id, challengee_id, challenge, accepted, rejected, created_at, challenger_turn, completed) VALUES ($user, $friend, $challenge, $accepted, $rejected, $created, 0, -1)", {$user: challengerId, $friend: challengeeId, $challenge: challenge, $accepted: 0, $rejected: 0, $created: Math.floor(Date.now() / 1000)}, function() {
                     if(this.lastID) res.sendStatus(200);
                     if(this.lastID) {
                         console.log('challenge added to database!');
@@ -287,6 +287,8 @@ app.post('/challenge/accept', function(req, res) {
                             statistics.update(row.challengee_id, 'accepted_challenges').then((resolved) => {
                                 if(resolved) {
                                     achievements.check(row.challengee_id).then((data) => {
+                                        console.log('achievements: ');
+                                        console.log(data);
                                         io.to(challengeeCon.id).emit('achievements-update', data);
                                     }).catch((error) => {
                                         console.log('Error while updating achievements: ' + error);
@@ -301,7 +303,7 @@ app.post('/challenge/accept', function(req, res) {
                         }
 
                         //Update user score
-                        updateScore(row.challengee_id, 10);
+                        //updateScore(row.challengee_id, 10);
                     }, (error) => {
                             console.log('error: ' + error);
                         });
@@ -379,16 +381,35 @@ app.post('/challenge/guess', function(req, res) {
     var challengeId = req.body.challenge;
     var guess = req.body.guess;
     var userId = req.body.user;
+                console.log('userId: ' + userId);
+                console.log('challengeId: ' + challengeId);
 
     db.serialize(function() {
         db.get("SELECT * FROM challenges where challenge_id = $id", {$id: challengeId}, function(error, row) {
+            var sameGuess = false;
+            if(row && row.challenger_guess === guess) { // Only if game flow is the same (challenger -> challengee -> challenger -> challengee -> challengee)
+                sameGuess = true;
+            }
+
+            console.log('SAME GUESS: ' + sameGuess);
+
             var query = 'UPDATE challenges SET ';
             if(row && row.challenger_id === parseInt(userId)) {
                 query += ('challenger_guess = ' + guess + ', challenger_turn = 0 WHERE challenge_id = $id');
             }
             else if(row && row.challengee_id === parseInt(userId)) {
-                query += ('challengee_guess = ' + guess + ', challenger_turn = 1 WHERE challenge_id = $id');
+                // Only if game flow is the same (challenger -> challengee -> challenger -> challengee -> challengee); 
+                var challenger_turn = 1;
+                if(sameGuess) {
+                    query += ('challengee_guess = ' + guess + ', challenger_turn = 0 WHERE challenge_id = $id');
+                }
+                else {
+                    query += ('challengee_guess = ' + guess + ', challenger_turn = 1 WHERE challenge_id = $id');
+                }
+
+                //query += ('challengee_guess = ' + guess + ', challenger_turn = ' + sameGuess ? '0' : '1' + ' WHERE challenge_id = $id');
             }
+
             db.run(query, {$id: challengeId}, function() {
                 if(this.changes) res.sendStatus(200);
                 if(this.changes) {
@@ -438,14 +459,14 @@ app.get('/:user_id/score', function(req, res) {
 });
 
 
-app.post('/image', function(req, res) {
+app.post('/file', function(req, res) {
     var userId = req.body.user;
     var challengeId = req.body.challenge;
     var url = req.body.url;
 
     db.serialize(function() {
         db.get("SELECT * FROM challenges where challenge_id = $id && challengee_id = $user", {$id: challengeId, $user: userId}, function(error, row) {
-            db.run("UPDATE challenges SET updated_at = $now, challenger_turn = (NOT challenger_turn), image_url = $url WHERE challenge_id = $id ", {$now: +new Date(), $id: challengeId, $url: url}, function() {
+            db.run("UPDATE challenges SET updated_at = $now, challenger_turn = (NOT challenger_turn), media_file = $url WHERE challenge_id = $id ", {$now: +new Date(), $id: challengeId, $url: url}, function() {
                 if(this.changes) res.sendStatus(200);
                 if(this.changes) {
                     getChallengeById(challengeId, 'challenge-update').then((row) => {
@@ -514,12 +535,13 @@ app.post('/completed', function(req, res) {
                         catch (e) {
                             console.log(e);
                         }
+
                         if(completed) {
-                            updateScore(row.challengee_id, 10);
+                            updateScore(row.challengee_id, '10');
                             console.log('+ 10');
                         } else {
-                            updateScore(row.challengee_id, -10);
-                            console.log('- 10');
+                            updateScore(row.challengee_id, '-10');
+                            console.log('-10');
 
                         }
                     }, (error) => {

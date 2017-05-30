@@ -1,30 +1,13 @@
-// http://ionicframework.com/docs/v2/theming/
 
+.alert-ios .alert-input {
+  color: color($colors, app, base);
+}
 
-// App Global Sass
-// --------------------------------------------------
-// Put style rules here that you want to apply globally. These
-// styles are for the entire app and not just one component.
-// Additionally, this file can be also used as an entry point
-// to import other Sass files to be included in the output CSS.
-//
-// Shared Sass variables, which can be used to adjust Ionic's
-// default Sass variables, belong in "theme/variables.scss".
-//
-// To declare rules for a specific mode, create a child rule
-// for the .md, .ios, or .wp mode classes. The mode class is
-// automatically applied to the <body> element in the app.
-
-  .alert-ios .alert-input{
-        color: color($colors, app, base);
-    } 
-    
 .item-disabled {
   pointer-events: none;
   color: lightgrey;
   text-decoration: line-through;
 }
-
 
 .toolbar-background {
   background: color($colors, app, base);
@@ -47,7 +30,7 @@ ion-navbar {
   color: color($colors, app, dark);
   background-color: color($colors, app, green);
   font-size: 15px;
-  width: 35%;
+  /*width: 35%;*/
 }
 
 .button-white {
@@ -62,11 +45,18 @@ ion-navbar {
   width: 35%;
 }
 
-.button-red-block{
+.button-red-block {
   color: color($colors, app, dark);
   background-color: color($colors, app, red);
   font-size: 15px;
   width: 100%;
+}
+
+.button-yellow {
+  color: color($colors, app, dark);
+  background-color: color($colors, app, yellow);
+  font-size: 15px;
+  width: 35%;
 }
 
 .text-green {
@@ -81,18 +71,18 @@ h1, h2, h3, h4, h5 {
   color: color($colors, app, contrast);
 }
 
-.div-bottom{
+.div-bottom {
   position: absolute;
   margin-bottom: 5%;
   width: 100%;
 }
 
-.no-scroll .scroll-content{
+.no-scroll .scroll-content {
   overflow: hidden;
 
 }
 
-.static-wrapper{
+.static-wrapper {
   width: 100%;
   min-height: 100%;
   padding: 0;
@@ -110,9 +100,6 @@ h1, h2, h3, h4, h5 {
   color: color($colors, app, contrast);
 }
 
-.achievement-toast {
-}
-
 .segment-button {
   color: white;
 }
@@ -122,6 +109,68 @@ h1, h2, h3, h4, h5 {
   color: color($colors, app, base) !important;
 }
 
-ion-card img{
+ion-card {
+  img {
+    margin-top: 20px;
+  }
+}
+
+.thin-button {
+  width: 35%;
+}
+
+.achievement {
+  width: 95%;
+}
+
+.number-picker {
   margin-top: 20px;
+
+  ion-icon[name="arrow-back"] {
+    font-size: 50px;
+    color: color($colors, app, contrast);
+  }
+
+  ion-icon[name="arrow-forward"] {
+    font-size: 50px;
+    color: color($colors, app, contrast);
+  }
+
+  ion-icon[name="arrow-back"]:active {
+    font-size: 50px;
+    color: color($colors, app, dark);
+  }
+
+  ion-icon[name="arrow-forward"]:active {
+    font-size: 50px;
+    color: color($colors, app, dark);
+  }
+
+  ion-col {
+    height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .guess {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 150px !important;
+
+    h1 {
+      font-size: 90px;
+    }
+  }
+}
+
+ion-icon[name="thumbs-up"] {
+  font-size: 25px;
+  color: color($colors, app, base);
+}
+
+ion-icon[name="thumbs-down"] {
+  font-size: 25px;
+  color: color($colors, app, base);
 }

@@ -1,7 +1,3 @@
-page-about {
-
-}
-
 .alert-message {
     color: color($colors, app, contrast);
     .ion-backdrop {
@@ -14,18 +10,23 @@ page-about {
 
     .challenge-button {
         color: color($colors, app, green);
-        //background-color: color($colors, app, green);
+        background-color: color($colors, app, base);
+    }
+
+    .challenge-button:active {
+        background-color: color($colors, app, base) !important;
     }
 
     .cancel-button {
         color: color($colors, app, red);
+        background-color: color($colors, app, base);
     }
 
-  
+    .cancel-button:active {
+        background-color: color($colors, app, base) !important;
+    }
 
     .alert-button {
-      //  border: none;
-        //border-top: none;
         border: 0.55px solid color($colors, app, dark);
     }
 }

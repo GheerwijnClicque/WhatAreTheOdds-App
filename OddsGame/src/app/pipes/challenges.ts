@@ -7,7 +7,7 @@ import { Storage } from '@ionic/storage';
 })
 @Injectable()
 export class ChallengesPipe {
-    user: any;
+    private user: any;
 
     constructor(private storage: Storage) {
         this.storage.get('user').then((user) => {
@@ -25,8 +25,11 @@ export class ChallengesPipe {
                     return obj['display'] = 'You challenged ' + obj.challengee_name;
                 }
             }
-            else if(obj.accepted === args[0] && args[0] === 1){
-                if(!obj.peek) {
+            else if(obj.accepted === args[0] && args[0] === 1){ // Active challenges
+                if(!obj.peek && obj.challenger_id === parseInt(JSON.parse(this.user).id)) {
+                    return obj['display'] = 'You - ' + obj.challengee_name;
+                }
+                else if(!obj.peek) {
                     return obj['display'] = obj.challenger_name + ' - ' + obj.challengee_name;
                 }
                 else {

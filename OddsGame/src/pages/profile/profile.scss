@@ -1,0 +1,51 @@
+page-contact {
+
+}
+
+ion-avatar img {
+  margin-top: 25%;
+  width: 30% !important;
+  height: 30% !important;
+  border-radius: 60%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+.div-bottom {
+  bottom: 0%;
+}
+
+.achievement-title {
+
+}
+
+.achievement-description {
+  font-size: 12px;
+  margin-left: 20px;
+  margin-top: 5px;
+  color: color($colors, app, light);
+}
+
+.achieved {
+  background-color: color($colors, app, base);
+  ion-icon {
+    color: color($colors, app, green);
+  }
+}
+
+.not-achieved {
+  //background-color: color($colors, app, dark);
+}
+
+.completed-challenges {
+    color: color($colors, app, green);
+}
+
+.failed-challenges {
+    color: color($colors, app, red);
+}
+
+.declined-challenges {
+    color: color($colors, app, yellow);
+}

@@ -1,7 +1,3 @@
-page-home {
-
-}
-
 .login-page {
     background-color: color($colors, app, green) !important;
 }
@@ -12,6 +8,10 @@ ion-grid {
 }
 
 .button-login {
-    background-color: color($colors, app, facebook);
+    background-color: color($colors, app, base);
     color: color($colors, app, contrast);
+}
+
+.logo {
+    margin-bottom: 20%;
 }

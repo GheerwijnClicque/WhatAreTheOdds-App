@@ -1,29 +1,6 @@
-// Ionic Variables and Theming. For more info, please see:
-// http://ionicframework.com/docs/v2/theming/
 $font-path: "../assets/fonts";
 
 @import "ionic.globals";
-
-
-// Shared Variables
-// --------------------------------------------------
-// To customize the look and feel of this app, you can override
-// the Sass variables found in Ionic's source scss files.
-// To view all the possible Ionic variables, see:
-// http://ionicframework.com/docs/v2/theming/overriding-ionic-variables/
-
-
-
-
-// Named Color Variables
-// --------------------------------------------------
-// Named colors makes it easy to reuse colors on various components.
-// It's highly recommended to change the default colors
-// to match your app's branding. Ionic uses a Sass map of
-// colors so you can add, rename and remove colors as needed.
-// The "primary" color is the only required color in the map.
-
-// https://coolors.co/424d58-79f2a9-f25f5c-41d3bd-247ba0
 
 $colors: (
   primary:    #387ef5,
@@ -41,6 +18,7 @@ $colors: (
     green:      #79f2a9,
     darkgreen:  #5eb57e,
     red:        #F25F5C,
+    yellow:    #FCF6B1,
     facebook: #3b5998,
   ),
   white: #fff,
@@ -72,18 +50,18 @@ $item-ios-divider-color: color($colors, app, contrast);
 
 $list-ios-background-color: color($colors, app, base);
 $list-ios-text-color: color($colors, app, contrast);
-//$list-ios-border-color: color($colors, app, contrast);
-
 $toolbar-md-button-color: color($colors, app, contrast);
-
 
 // Button
 $button-ios-text-color: color($colors, app, green);
 $button-ios-background-color-activated: color($colors, app, dark);
 
+//Spinner 
+$spinner-ios-ios-color: color($colors, app, green);
 
-
-
+//Badges
+$badge-ios-background-color: color($colors, app, contrast);
+$badge-ios-text-color: color($colors, app, dark);
 
 
 
@@ -110,8 +88,8 @@ $badge-ios-background-color: color($colors, app, contrast);
 $badge-ios-text-color: color($colors, app, dark);
 
 //Toasts
-$toast-ios-background: color($colors, app, dark);
-$toast-ios-title-color: color($colors, app, contrast);
+$toast-ios-background: color($colors, app, contrast);
+$toast-ios-title-color: color($colors, app, dark);
 $toast-ios-border-radius: 3px;
 
 //Segment
